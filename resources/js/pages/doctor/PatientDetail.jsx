@@ -35,62 +35,73 @@ export default function PatientDetail() {
     if (!patient) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 rounded-full border-4 border-blue-600 border-t-transparent animate-spin" />
             </div>
         );
     }
 
+    const initial = patient.user?.name?.[0]?.toUpperCase() ?? '?';
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-6 max-w-5xl">
             {/* Patient Header */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-2xl font-bold text-blue-600">
-                    {patient.user?.name?.[0]?.toUpperCase() ?? '?'}
+            <div className="card p-6 flex items-center gap-5">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-lg flex-shrink-0">
+                    {initial}
                 </div>
                 <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-bold text-slate-800 dark:text-white">{patient.user?.name}</h1>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">{patient.user?.name}</h1>
                         {patient.is_critical && (
-                            <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold rounded-full badge-pulse">
-                                CRITICAL
-                            </span>
+                            <span className="status-emergency badge-pulse text-xs font-bold px-2.5 py-1 rounded-full">CRITICAL</span>
                         )}
                     </div>
-                    <p className="text-sm text-slate-500 mt-0.5">
-                        {patient.blood_group} • {patient.age} yrs • {patient.gender}
-                        {patient.phone ? ` • ${patient.phone}` : ''}
+                    <p className="text-sm text-slate-500 mt-1">
+                        {[patient.blood_group, patient.age ? `${patient.age} yrs` : null, patient.gender, patient.phone].filter(Boolean).join(' • ')}
                     </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Live Monitoring
                 </div>
             </div>
 
             {/* Latest vitals */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <MetricCard title="Heart Rate"   value={latest?.heart_rate}               unit="bpm" icon="❤️" color="red"    />
-                <MetricCard title="SpO₂"         value={latest?.spo2}                     unit="%"   icon="💧" color="blue"   />
-                <MetricCard title="Temperature"  value={latest?.temperature}              unit="°F"  icon="🌡️" color="yellow" />
-                <MetricCard title="Blood Sugar"  value={latest?.sugar_level}             unit="mg/dL" icon="🩸" color="purple" />
+                <MetricCard title="Heart Rate"  value={latest?.heart_rate}  unit="bpm"   color="red"    />
+                <MetricCard title="SpO₂"        value={latest?.spo2}        unit="%"     color="blue"   />
+                <MetricCard title="Temperature" value={latest?.temperature} unit="°F"   color="yellow" />
+                <MetricCard title="Blood Sugar" value={latest?.sugar_level} unit="mg/dL" color="purple" />
             </div>
 
-            {/* Charts */}
-            <LiveChart data={recent} fields={CHART_FIELDS} title="Vitals Over Time (Live)" />
+            {/* Chart */}
+            <LiveChart data={recent} fields={CHART_FIELDS} title="Vitals Over Time" />
 
             {/* Alerts */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-                    <h2 className="font-semibold text-slate-700 dark:text-slate-200">Alerts</h2>
+            <div className="card overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                    <h2 className="font-bold text-slate-900 dark:text-white">Patient Alerts</h2>
+                    {alerts.length > 0 && (
+                        <span className="status-emergency text-xs font-bold px-2.5 py-1 rounded-full">{alerts.length} active</span>
+                    )}
                 </div>
                 {aLoading ? (
-                    <div className="p-4 space-y-2">
-                        {[1, 2].map(i => <div key={i} className="h-10 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />)}
-                    </div>
+                    <div className="p-5 space-y-2">{[1, 2].map(i => <div key={i} className="skeleton h-10 rounded-xl" />)}</div>
                 ) : alerts.length === 0 ? (
-                    <div className="p-6 text-center text-slate-500 text-sm">No alerts for this patient.</div>
+                    <div className="p-10 text-center">
+                        <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                            <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <p className="text-slate-500 text-sm">No alerts for this patient</p>
+                    </div>
                 ) : (
                     <div className="divide-y divide-slate-100 dark:divide-slate-700">
                         {alerts.map((a) => (
-                            <div key={a._id} className="px-5 py-3 flex items-start gap-2">
+                            <div key={a._id} className="px-6 py-4 flex items-start gap-3">
                                 <AlertBadge severity={a.severity} />
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{a.message}</p>
+                                <p className="text-sm text-slate-700 dark:text-slate-300">{a.message}</p>
                             </div>
                         ))}
                     </div>
