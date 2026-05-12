@@ -1,0 +1,1 @@
+'ZIP valid, entries: ' . $zip- . PHP_EOL;

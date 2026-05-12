@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #1e293b; margin: 20px; }
+        h1   { color: #2563EB; font-size: 20px; }
+        h2   { color: #334155; font-size: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .meta { color: #64748b; font-size: 11px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { background: #2563EB; color: white; padding: 6px 10px; text-align: left; }
+        td { padding: 5px 10px; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; }
+        .badge-critical  { background: #fee2e2; color: #dc2626; }
+        .badge-warning   { background: #fef9c3; color: #ca8a04; }
+        .badge-normal    { background: #dcfce7; color: #16a34a; }
+        .notes { background: #f1f5f9; padding: 12px; border-left: 3px solid #2563EB; }
+    </style>
+</head>
+<body>
+    <h1>MediFlow – Health Report</h1>
+    <p class="meta">
+        Patient: <strong>{{ $report->patient->user->name ?? 'N/A' }}</strong> &nbsp;|&nbsp;
+        Period: {{ ucfirst($report->period) }} &nbsp;|&nbsp;
+        {{ $report->period_start?->format('M d') }} – {{ $report->period_end?->format('M d, Y') }} &nbsp;|&nbsp;
+        Generated: {{ now()->format('M d, Y H:i') }}
+    </p>
+
+    <h2>Summary</h2>
+    <table>
+        <tr>
+            <th>Metric</th><th>Average</th><th>Status</th>
+        </tr>
+        <tr>
+            <td>Heart Rate</td>
+            <td>{{ $report->avg_heart_rate ?? 'N/A' }} bpm</td>
+            <td>
+                @if($report->avg_heart_rate > 100)
+                    <span class="badge badge-critical">High</span>
+                @elseif($report->avg_heart_rate)
+                    <span class="badge badge-normal">Normal</span>
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td>SpO₂</td>
+            <td>{{ $report->avg_spo2 ?? 'N/A' }}%</td>
+            <td>
+                @if($report->avg_spo2 < 95)
+                    <span class="badge badge-critical">Low</span>
+                @elseif($report->avg_spo2)
+                    <span class="badge badge-normal">Normal</span>
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature</td>
+            <td>{{ $report->avg_temperature ?? 'N/A' }}°F</td>
+            <td>
+                @if($report->avg_temperature > 100.4)
+                    <span class="badge badge-warning">Elevated</span>
+                @elseif($report->avg_temperature)
+                    <span class="badge badge-normal">Normal</span>
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td>Blood Pressure</td>
+            <td>{{ $report->avg_blood_pressure_systolic ?? 'N/A' }} / {{ $report->avg_blood_pressure_diastolic ?? 'N/A' }} mmHg</td>
+            <td><span class="badge badge-normal">On file</span></td>
+        </tr>
+        <tr>
+            <td>Sugar Level</td>
+            <td>{{ $report->avg_sugar_level ?? 'N/A' }} mg/dL</td>
+            <td>
+                @if($report->avg_sugar_level > 200 || ($report->avg_sugar_level && $report->avg_sugar_level < 70))
+                    <span class="badge badge-critical">Abnormal</span>
+                @elseif($report->avg_sugar_level)
+                    <span class="badge badge-normal">Normal</span>
+                @endif
+            </td>
+        </tr>
+    </table>
+
+    <h2>Alerts</h2>
+    <table>
+        <tr><th>Total Alerts</th><th>Critical/Emergency</th><th>Total Readings</th></tr>
+        <tr>
+            <td>{{ $report->alerts_count }}</td>
+            <td>{{ $report->critical_alerts_count }}</td>
+            <td>{{ $report->metrics_count }}</td>
+        </tr>
+    </table>
+
+    @if($report->doctor_notes)
+    <h2>Doctor Notes</h2>
+    <div class="notes">{{ $report->doctor_notes }}</div>
+    @endif
+
+    @if($metrics->isNotEmpty())
+    <h2>Readings Log ({{ $metrics->count() }} entries)</h2>
+    <table>
+        <tr>
+            <th>Date/Time</th>
+            <th>HR (bpm)</th>
+            <th>SpO₂ (%)</th>
+            <th>BP (mmHg)</th>
+            <th>Temp (°F)</th>
+            <th>Sugar (mg/dL)</th>
+        </tr>
+        @foreach($metrics->take(50) as $m)
+        <tr>
+            <td>{{ $m->timestamp?->format('M d H:i') }}</td>
+            <td>{{ $m->heart_rate }}</td>
+            <td>{{ $m->spo2 }}</td>
+            <td>{{ $m->blood_pressure_systolic }}/{{ $m->blood_pressure_diastolic }}</td>
+            <td>{{ $m->temperature }}</td>
+            <td>{{ $m->sugar_level }}</td>
+        </tr>
+        @endforeach
+    </table>
+    @endif
+
+    <p class="meta" style="text-align:center; margin-top:30px;">
+        Generated by MediFlow AI-Powered Remote Patient Monitoring Dashboard
+    </p>
+</body>
+</html>
