@@ -118,6 +118,12 @@ return [
             'driver'   => 'mongodb',
             'dsn'      => env('DB_URL'),
             'database' => env('DB_DATABASE', 'mediflow'),
+            'options'  => [
+                'serverSelectionTryOnce'   => false,
+                'serverSelectionTimeoutMS' => 10000,
+                'connectTimeoutMS'         => 10000,
+                'socketTimeoutMS'          => 10000,
+            ],
         ],
 
     ],

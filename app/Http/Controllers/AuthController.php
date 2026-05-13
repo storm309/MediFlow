@@ -138,6 +138,55 @@ class AuthController extends Controller
         ]);
     }
 
+    // ── Update Profile ────────────────────────────────────────────────────────
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name'  => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string|max:20',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $user = $request->user();
+            $user->fill($validator->validated());
+            $user->save();
+            return response()->json(['success' => true, 'message' => 'Profile updated.', 'data' => $user]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    // ── Update Password ───────────────────────────────────────────────────────
+
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password'      => 'required|string',
+            'password'              => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $user = $request->user();
+            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+                return response()->json(['success' => false, 'message' => 'Current password is incorrect.'], 422);
+            }
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+            $user->save();
+            return response()->json(['success' => true, 'message' => 'Password changed successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
     // ── Reset Password ────────────────────────────────────────────────────────
 
     public function resetPassword(Request $request): JsonResponse

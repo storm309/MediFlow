@@ -25,9 +25,11 @@ Route::prefix('auth')->group(function () {
 
     // Protected
     Route::middleware('jwt.auth')->group(function () {
-        Route::post('logout',  [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
-        Route::get('me',       [AuthController::class, 'me']);
+        Route::post('logout',   [AuthController::class, 'logout']);
+        Route::post('refresh',  [AuthController::class, 'refresh']);
+        Route::get('me',        [AuthController::class, 'me']);
+        Route::put('profile',   [AuthController::class, 'updateProfile']);
+        Route::put('password',  [AuthController::class, 'updatePassword']);
     });
 });
 
