@@ -96,14 +96,3 @@ export default function PatientDashboard() {
         </div>
     );
 }
-import { usePatientChannel }              from '../../hooks/useRealtimeChannels';
-import MetricCard  from '../../components/ui/MetricCard';
-import LiveChart   from '../../components/ui/LiveChart';
-import AlertBadge  from '../../components/ui/AlertBadge';
-import { selectUser }  from '../../redux/slices/authSlice';
-
-const CHART_FIELDS = [
-    { key: 'heart_rate',  label: 'Heart Rate',  color: '#EF4444' },
-    { key: 'spo2',        label: 'SpOâ‚‚ %',      color: '#2563EB' },
-    { key: 'temperature', label: 'Temp Â°F',     color: '#F59E0B' },
-];
