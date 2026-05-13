@@ -11,7 +11,7 @@ const features = [
         color: 'from-red-500 to-pink-600',
         bg: 'bg-red-50',
         title: 'Live Vital Monitoring',
-        desc: 'Stream heart rate, SpOâ‚‚, blood pressure, temperature and blood sugar â€” all updating in real time via WebSocket.',
+        desc: 'Stream heart rate, SpO2, blood pressure, temperature and blood sugar — all updating in real time via WebSocket.',
     },
     {
         icon: (
@@ -66,15 +66,15 @@ const features = [
         color: 'from-slate-600 to-slate-800',
         bg: 'bg-slate-50',
         title: 'Secure & Role-Based',
-        desc: 'JWT authentication with Admin, Doctor and Patient roles â€” each user sees only what they need.',
+        desc: 'JWT authentication with Admin, Doctor and Patient roles — each user sees only what they need.',
     },
 ];
 
 const stats = [
-    { value: '3', label: 'User Roles', icon: 'ðŸ‘¥' },
-    { value: '21+', label: 'Health Metrics Tracked', icon: 'ðŸ“Š' },
-    { value: 'Live', label: 'WebSocket Updates', icon: 'âš¡' },
-    { value: '100%', label: 'Open Source', icon: 'ðŸ”“' },
+    { value: '3',    label: 'User Roles',             icon: '👥' },
+    { value: '21+',  label: 'Health Metrics Tracked', icon: '📊' },
+    { value: 'Live', label: 'WebSocket Updates',       icon: '⚡' },
+    { value: '100%', label: 'Open Source',             icon: '🔓' },
 ];
 
 export default function LandingPage() {
@@ -148,7 +148,7 @@ export default function LandingPage() {
                                 Reimagined
                             </h1>
                             <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-lg">
-                                MediFlow gives doctors real-time visibility into patient vitals, smart AI-powered alerts, and automated health reports â€” all in one beautiful dashboard.
+                        MediFlow gives doctors real-time visibility into patient vitals, smart AI-powered alerts, and automated health reports — all in one beautiful dashboard.
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <Link to="/register"
@@ -193,7 +193,7 @@ export default function LandingPage() {
                                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                         </svg>
                                     </div>
-                                    <p className="text-sm font-semibold text-white">Patient Vitals â€” John Doe</p>
+                                    <p className="text-sm font-semibold text-white">Patient Vitals — John Doe</p>
                                     <span className="ml-auto flex items-center gap-1.5 text-green-400 text-xs font-medium">
                                         <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                                         Live
@@ -202,10 +202,10 @@ export default function LandingPage() {
                                 {/* Metric mini-cards */}
                                 <div className="grid grid-cols-2 gap-3 mb-4">
                                     {[
-                                        { icon: 'â¤ï¸', label: 'Heart Rate', val: '78', unit: 'bpm', ok: true },
-                                        { icon: 'ðŸ’§', label: 'SpOâ‚‚',       val: '98', unit: '%',   ok: true },
-                                        { icon: 'ðŸŒ¡ï¸', label: 'Temp',       val: '98.4', unit: 'Â°F', ok: true },
-                                        { icon: 'ðŸ©¸', label: 'Sugar',      val: '112', unit: 'mg/dL', ok: true },
+                                        { icon: '❤️', label: 'Heart Rate', val: '78',   unit: 'bpm',   ok: true },
+                                        { icon: '💧', label: 'SpO2',       val: '98',   unit: '%',     ok: true },
+                                        { icon: '🌡', label: 'Temp',        val: '98.4', unit: '°F',    ok: true },
+                                        { icon: '🩸', label: 'Sugar',      val: '112',  unit: 'mg/dL', ok: true },
                                     ].map((m) => (
                                         <div key={m.label} className="bg-white/10 rounded-xl p-3">
                                             <div className="flex items-center justify-between mb-1">
@@ -389,7 +389,7 @@ export default function LandingPage() {
                         <span className="font-semibold text-white text-sm">MediFlow</span>
                     </div>
                     <p className="text-xs text-slate-500">
-                        &copy; {new Date().getFullYear()} MediFlow. Built with â¤ï¸ for better healthcare. Open Source under MIT License.
+                        &copy; {new Date().getFullYear()} MediFlow. Built with ❤️ for better healthcare. Open Source under MIT License.
                     </p>
                     <div className="flex items-center gap-4 text-xs">
                         <Link to="/login" className="hover:text-white transition-colors">Login</Link>

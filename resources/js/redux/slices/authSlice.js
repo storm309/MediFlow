@@ -11,6 +11,11 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         return user;
     } catch (err) {
+        const errors = err.response?.data?.errors;
+        if (errors) {
+            const first = Object.values(errors)[0];
+            return rejectWithValue(Array.isArray(first) ? first[0] : first);
+        }
         return rejectWithValue(err.response?.data?.message ?? 'Login failed');
     }
 });
@@ -23,6 +28,11 @@ export const registerUser = createAsyncThunk('auth/register', async (data, { rej
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         return user;
     } catch (err) {
+        const errors = err.response?.data?.errors;
+        if (errors) {
+            const first = Object.values(errors)[0];
+            return rejectWithValue(Array.isArray(first) ? first[0] : first);
+        }
         return rejectWithValue(err.response?.data?.message ?? 'Registration failed');
     }
 });

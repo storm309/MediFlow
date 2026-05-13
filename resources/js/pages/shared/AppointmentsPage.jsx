@@ -111,7 +111,7 @@ export default function AppointmentsPage() {
                                         <p className="font-semibold text-slate-900 dark:text-white">{a.title}</p>
                                         <p className="text-xs text-slate-500 mt-0.5">
                                             {a.scheduled_at ? format(parseISO(a.scheduled_at), 'PPp') : ''}
-                                            {a.location ? ` â€¢ ${a.location}` : ''}
+                                            {a.location ? ` · ${a.location}` : ''}
                                         </p>
                                     </div>
                                 </div>

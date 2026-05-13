@@ -53,7 +53,7 @@ export default function AdminDashboard() {
             <div className="flex items-start justify-between">
                 <div>
                     <h1 className="page-title">Admin Dashboard</h1>
-                    <p className="page-subtitle">System-wide overview â€” welcome back, {user?.name?.split(' ')[0]}.</p>
+                    <p className="page-subtitle">System-wide overview — welcome back, {user?.name?.split(' ')[0]}.</p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -61,12 +61,15 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* KPI cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-                <MetricCard title="Total Users"    value={adminStats?.total_users}    icon="ðŸ‘¥" color="blue"   />
-                <MetricCard title="Total Doctors"  value={adminStats?.total_doctors}  icon="ðŸ©º" color="green"  />
-                <MetricCard title="Total Patients" value={adminStats?.total_patients} icon="ðŸ¥" color="cyan"   />
-                <MetricCard title="Active Alerts"  value={stats?.total ?? 0}          icon="âš ï¸" color="red"    />
+                <MetricCard title="Total Users"    value={adminStats?.total_users}    color="blue"
+                    icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
+                <MetricCard title="Total Doctors"  value={adminStats?.total_doctors}  color="green"
+                    icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>} />
+                <MetricCard title="Total Patients" value={adminStats?.total_patients} color="cyan"
+                    icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>} />
+                <MetricCard title="Active Alerts"  value={stats?.total ?? 0}          color="red"
+                    icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>} />
             </div>
 
             {/* Quick actions */}

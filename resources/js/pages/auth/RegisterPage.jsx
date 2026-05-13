@@ -4,37 +4,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/slices/authSlice';
 import toast from 'react-hot-toast';
 
-const InputField = ({ label, name, type = 'text', placeholder, icon, form, setForm }) => (
+const InputField = ({ label, name, type = 'text', placeholder, form, setForm }) => (
     <div>
         <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">{label}</label>
-        <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>
-            <input
-                type={type}
-                required
-                value={form[name]}
-                onChange={(e) => setForm({ ...form, [name]: e.target.value })}
-                className="input-base pl-9"
-                placeholder={placeholder}
-            />
-        </div>
+        <input
+            type={type}
+            required
+            value={form[name]}
+            onChange={(e) => setForm({ ...form, [name]: e.target.value })}
+            className="input-base"
+            placeholder={placeholder}
+        />
     </div>
-);
-
-const UserIcon = () => (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    </svg>
-);
-const MailIcon = () => (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-    </svg>
-);
-const LockIcon = () => (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-    </svg>
 );
 
 export default function RegisterPage() {
@@ -69,10 +50,10 @@ export default function RegisterPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <InputField label="Full Name"        name="name"                  type="text"     placeholder="Dr. John Doe"     icon={<UserIcon />} form={form} setForm={setForm} />
-                <InputField label="Email Address"    name="email"                 type="email"    placeholder="you@example.com"  icon={<MailIcon />} form={form} setForm={setForm} />
-                <InputField label="Password"         name="password"              type="password" placeholder="••••••••"          icon={<LockIcon />} form={form} setForm={setForm} />
-                <InputField label="Confirm Password" name="password_confirmation" type="password" placeholder="••••••••"          icon={<LockIcon />} form={form} setForm={setForm} />
+                <InputField label="Full Name"        name="name"                  type="text"     placeholder="Dr. John Doe"    form={form} setForm={setForm} />
+                <InputField label="Email Address"    name="email"                 type="email"    placeholder="you@example.com" form={form} setForm={setForm} />
+                <InputField label="Password (min 8 chars)" name="password"              type="password" placeholder="••••••••"         form={form} setForm={setForm} />
+                <InputField label="Confirm Password"      name="password_confirmation" type="password" placeholder="••••••••"         form={form} setForm={setForm} />
 
                 <div>
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Your Role</label>

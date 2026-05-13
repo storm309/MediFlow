@@ -60,7 +60,7 @@ export default function AlertsPage() {
                         </svg>
                     </div>
                     <p className="font-bold text-slate-800 dark:text-white text-lg">All clear!</p>
-                    <p className="text-slate-500 text-sm mt-1">No active alerts â€” all patients are in stable condition.</p>
+                    <p className="text-slate-500 text-sm mt-1">No active alerts — all patients are in stable condition.</p>
                 </div>
             ) : (
                 <div className="space-y-3">

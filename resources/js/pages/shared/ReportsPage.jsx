@@ -99,8 +99,8 @@ export default function ReportsPage() {
                                     <p className="font-semibold text-slate-900 dark:text-white capitalize">{r.period} Report</p>
                                     <p className="text-xs text-slate-500 mt-0.5">
                                         {r.start_date ? format(new Date(r.start_date), 'MMM d') : ''}
-                                        {r.end_date ? ` â€“ ${format(new Date(r.end_date), 'MMM d, yyyy')}` : ''}
-                                        {r.metrics_count != null ? ` â€¢ ${r.metrics_count} readings` : ''}
+                                        {r.end_date ? ` – ${format(new Date(r.end_date), 'MMM d, yyyy')}` : ''}
+                                        {r.metrics_count != null ? ` · ${r.metrics_count} readings` : ''}
                                     </p>
                                 </div>
                             </div>

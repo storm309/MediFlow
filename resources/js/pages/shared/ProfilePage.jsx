@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import api from '../../services/api';
 import { fetchMe, selectUser } from '../../redux/slices/authSlice';
@@ -72,7 +72,7 @@ export default function ProfilePage() {
                 {[
                     { label: 'Full Name', name: 'name', type: 'text', placeholder: 'Your full name' },
                     { label: 'Email Address', name: 'email', type: 'email', placeholder: 'you@example.com' },
-                    { label: 'Phone', name: 'phone', type: 'tel', placeholder: '+1 234 567 8900' },
+                    { label: 'Phone', name: 'phone', type: 'tel', placeholder: '+91 98765 43210' },
                 ].map(({ label, name, type, placeholder }) => (
                     <div key={name}>
                         <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">{label}</label>
@@ -87,7 +87,7 @@ export default function ProfilePage() {
                         {loading ? (
                             <>
                                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                                Savingâ€¦
+                                Saving…
                             </>
                         ) : 'Save Changes'}
                     </button>
