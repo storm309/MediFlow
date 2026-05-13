@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
             <div className="flex items-start justify-between">
                 <div>
                     <h1 className="page-title">Admin Dashboard</h1>
-                    <p className="page-subtitle">System-wide overview — welcome back, {user?.name?.split(' ')[0]}.</p>
+                    <p className="page-subtitle">System-wide overview â€” welcome back, {user?.name?.split(' ')[0]}.</p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -63,10 +63,10 @@ export default function AdminDashboard() {
 
             {/* KPI cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-                <MetricCard title="Total Users"    value={adminStats?.total_users}    icon="👥" color="blue"   />
-                <MetricCard title="Total Doctors"  value={adminStats?.total_doctors}  icon="🩺" color="green"  />
-                <MetricCard title="Total Patients" value={adminStats?.total_patients} icon="🏥" color="cyan"   />
-                <MetricCard title="Active Alerts"  value={stats?.total ?? 0}          icon="⚠️" color="red"    />
+                <MetricCard title="Total Users"    value={adminStats?.total_users}    icon="ðŸ‘¥" color="blue"   />
+                <MetricCard title="Total Doctors"  value={adminStats?.total_doctors}  icon="ðŸ©º" color="green"  />
+                <MetricCard title="Total Patients" value={adminStats?.total_patients} icon="ðŸ¥" color="cyan"   />
+                <MetricCard title="Active Alerts"  value={stats?.total ?? 0}          icon="âš ï¸" color="red"    />
             </div>
 
             {/* Quick actions */}
@@ -91,52 +91,6 @@ export default function AdminDashboard() {
                         </Link>
                     ))}
                 </div>
-            </div>
-        </div>
-    );
-}
-
-export default function AdminDashboard() {
-    const dispatch   = useDispatch();
-    const stats      = useSelector(selectAlertStats);
-    const user       = useSelector(selectUser);
-    const [adminStats, setAdminStats] = React.useState(null);
-
-    useEffect(() => {
-        dispatch(fetchAlertStats());
-        api.get('/admin/dashboard').then(r => setAdminStats(r.data.data)).catch(() => {});
-    }, [dispatch]);
-
-    return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Admin Dashboard</h1>
-                <p className="text-slate-500 text-sm mt-1">System-wide overview for {user?.name}.</p>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <MetricCard title="Total Users"    value={adminStats?.total_users}    icon="👥" color="blue"   />
-                <MetricCard title="Total Doctors"  value={adminStats?.total_doctors}  icon="🩺" color="green"  />
-                <MetricCard title="Total Patients" value={adminStats?.total_patients} icon="🏥" color="cyan"   />
-                <MetricCard title="Active Alerts"  value={stats?.total ?? 0}          icon="⚠️" color="red"    />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Link to="/alerts" className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
-                    <div className="text-2xl mb-2">⚠️</div>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 transition-colors">Manage Alerts</p>
-                    <p className="text-xs text-slate-500 mt-1">Review and resolve patient alerts</p>
-                </Link>
-                <Link to="/reports" className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
-                    <div className="text-2xl mb-2">📋</div>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 transition-colors">Reports</p>
-                    <p className="text-xs text-slate-500 mt-1">Generate and download PDF reports</p>
-                </Link>
-                <Link to="/appointments" className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
-                    <div className="text-2xl mb-2">📅</div>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 transition-colors">Appointments</p>
-                    <p className="text-xs text-slate-500 mt-1">View and manage all appointments</p>
-                </Link>
             </div>
         </div>
     );

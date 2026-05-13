@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const features = [
@@ -11,7 +11,7 @@ const features = [
         color: 'from-red-500 to-pink-600',
         bg: 'bg-red-50',
         title: 'Live Vital Monitoring',
-        desc: 'Stream heart rate, SpO₂, blood pressure, temperature and blood sugar — all updating in real time via WebSocket.',
+        desc: 'Stream heart rate, SpOâ‚‚, blood pressure, temperature and blood sugar â€” all updating in real time via WebSocket.',
     },
     {
         icon: (
@@ -66,15 +66,15 @@ const features = [
         color: 'from-slate-600 to-slate-800',
         bg: 'bg-slate-50',
         title: 'Secure & Role-Based',
-        desc: 'JWT authentication with Admin, Doctor and Patient roles — each user sees only what they need.',
+        desc: 'JWT authentication with Admin, Doctor and Patient roles â€” each user sees only what they need.',
     },
 ];
 
 const stats = [
-    { value: '3', label: 'User Roles', icon: '👥' },
-    { value: '21+', label: 'Health Metrics Tracked', icon: '📊' },
-    { value: 'Live', label: 'WebSocket Updates', icon: '⚡' },
-    { value: '100%', label: 'Open Source', icon: '🔓' },
+    { value: '3', label: 'User Roles', icon: 'ðŸ‘¥' },
+    { value: '21+', label: 'Health Metrics Tracked', icon: 'ðŸ“Š' },
+    { value: 'Live', label: 'WebSocket Updates', icon: 'âš¡' },
+    { value: '100%', label: 'Open Source', icon: 'ðŸ”“' },
 ];
 
 export default function LandingPage() {
@@ -88,7 +88,7 @@ export default function LandingPage() {
 
     return (
         <div className="min-h-screen bg-white text-slate-900">
-            {/* ── Navbar ─────────────────────────────────── */}
+            {/* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
                 scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100' : 'bg-transparent'
             }`}>
@@ -121,7 +121,7 @@ export default function LandingPage() {
                 </div>
             </nav>
 
-            {/* ── Hero ───────────────────────────────────── */}
+            {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-cyan-950">
                 {/* Background decoration */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -148,7 +148,7 @@ export default function LandingPage() {
                                 Reimagined
                             </h1>
                             <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-lg">
-                                MediFlow gives doctors real-time visibility into patient vitals, smart AI-powered alerts, and automated health reports — all in one beautiful dashboard.
+                                MediFlow gives doctors real-time visibility into patient vitals, smart AI-powered alerts, and automated health reports â€” all in one beautiful dashboard.
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <Link to="/register"
@@ -193,7 +193,7 @@ export default function LandingPage() {
                                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                         </svg>
                                     </div>
-                                    <p className="text-sm font-semibold text-white">Patient Vitals — John Doe</p>
+                                    <p className="text-sm font-semibold text-white">Patient Vitals â€” John Doe</p>
                                     <span className="ml-auto flex items-center gap-1.5 text-green-400 text-xs font-medium">
                                         <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                                         Live
@@ -202,10 +202,10 @@ export default function LandingPage() {
                                 {/* Metric mini-cards */}
                                 <div className="grid grid-cols-2 gap-3 mb-4">
                                     {[
-                                        { icon: '❤️', label: 'Heart Rate', val: '78', unit: 'bpm', ok: true },
-                                        { icon: '💧', label: 'SpO₂',       val: '98', unit: '%',   ok: true },
-                                        { icon: '🌡️', label: 'Temp',       val: '98.4', unit: '°F', ok: true },
-                                        { icon: '🩸', label: 'Sugar',      val: '112', unit: 'mg/dL', ok: true },
+                                        { icon: 'â¤ï¸', label: 'Heart Rate', val: '78', unit: 'bpm', ok: true },
+                                        { icon: 'ðŸ’§', label: 'SpOâ‚‚',       val: '98', unit: '%',   ok: true },
+                                        { icon: 'ðŸŒ¡ï¸', label: 'Temp',       val: '98.4', unit: 'Â°F', ok: true },
+                                        { icon: 'ðŸ©¸', label: 'Sugar',      val: '112', unit: 'mg/dL', ok: true },
                                     ].map((m) => (
                                         <div key={m.label} className="bg-white/10 rounded-xl p-3">
                                             <div className="flex items-center justify-between mb-1">
@@ -249,7 +249,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ── Stats Strip ────────────────────────────── */}
+            {/* â”€â”€ Stats Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <section className="py-12 bg-white border-b border-slate-100">
                 <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                     {stats.map((s) => (
@@ -262,7 +262,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ── Features ───────────────────────────────── */}
+            {/* â”€â”€ Features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <section className="py-24 bg-slate-50">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
@@ -292,7 +292,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ── Roles section ──────────────────────────── */}
+            {/* â”€â”€ Roles section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <section className="py-24 bg-white">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
@@ -302,21 +302,21 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                emoji: '🔑',
+                                emoji: 'ðŸ”‘',
                                 role: 'Admin',
                                 color: 'border-t-slate-900',
                                 badge: 'bg-slate-900',
                                 perks: ['Manage all users', 'System analytics', 'Activity audit logs', 'Platform KPIs'],
                             },
                             {
-                                emoji: '🩺',
+                                emoji: 'ðŸ©º',
                                 role: 'Doctor',
                                 color: 'border-t-blue-600',
                                 badge: 'bg-blue-600',
                                 perks: ['Monitor assigned patients', 'Receive live critical alerts', 'Generate PDF reports', 'Manage appointments'],
                             },
                             {
-                                emoji: '🏥',
+                                emoji: 'ðŸ¥',
                                 role: 'Patient',
                                 color: 'border-t-emerald-600',
                                 badge: 'bg-emerald-600',
@@ -349,7 +349,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ── CTA ────────────────────────────────────── */}
+            {/* â”€â”€ CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <section className="py-24 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <div className="absolute -top-24 -left-24 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
@@ -360,7 +360,7 @@ export default function LandingPage() {
                         Ready to transform your clinic?
                     </h2>
                     <p className="text-blue-100 text-lg leading-relaxed mb-10">
-                        Get started with MediFlow today — free, open source, and ready for your patients in minutes.
+                        Get started with MediFlow today â€” free, open source, and ready for your patients in minutes.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/register"
@@ -377,7 +377,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ── Footer ─────────────────────────────────── */}
+            {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <footer className="bg-slate-900 text-slate-400 py-10">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-2.5">
@@ -389,7 +389,7 @@ export default function LandingPage() {
                         <span className="font-semibold text-white text-sm">MediFlow</span>
                     </div>
                     <p className="text-xs text-slate-500">
-                        &copy; {new Date().getFullYear()} MediFlow. Built with ❤️ for better healthcare. Open Source under MIT License.
+                        &copy; {new Date().getFullYear()} MediFlow. Built with â¤ï¸ for better healthcare. Open Source under MIT License.
                     </p>
                     <div className="flex items-center gap-4 text-xs">
                         <Link to="/login" className="hover:text-white transition-colors">Login</Link>
@@ -397,68 +397,6 @@ export default function LandingPage() {
                         <a href="https://github.com/storm309/MediFlow" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
                     </div>
                 </div>
-            </footer>
-        </div>
-    );
-}
-
-
-export default function LandingPage() {
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white flex flex-col">
-            {/* Navbar */}
-            <nav className="flex items-center justify-between px-6 py-4">
-                <div className="flex items-center gap-2 font-bold text-xl">
-                    <span className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-sm">❤</span>
-                    MediFlow
-                </div>
-                <div className="flex items-center gap-3">
-                    <Link to="/login"    className="px-4 py-2 text-sm text-white/80 hover:text-white transition-colors">Login</Link>
-                    <Link to="/register" className="px-4 py-2 text-sm bg-white text-blue-700 font-semibold rounded-lg hover:bg-blue-50 transition-colors">Get Started</Link>
-                </div>
-            </nav>
-
-            {/* Hero */}
-            <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
-                <div className="max-w-3xl">
-                    <span className="inline-block bg-white/10 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full mb-6 tracking-wide uppercase">
-                        AI-Powered Remote Patient Monitoring
-                    </span>
-                    <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight mb-6">
-                        Healthcare <br />
-                        <span className="text-cyan-300">Reimagined</span> in Real Time
-                    </h1>
-                    <p className="text-blue-100 text-lg leading-relaxed max-w-xl mx-auto mb-10">
-                        MediFlow connects doctors and patients through live health monitoring, intelligent alerts, and instant communication — all in one seamless dashboard.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link to="/register" className="px-8 py-3.5 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors text-sm shadow-lg">
-                            Start Monitoring
-                        </Link>
-                        <Link to="/login" className="px-8 py-3.5 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/20 transition-colors text-sm border border-white/30">
-                            Sign In
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Feature cards */}
-                <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl w-full">
-                    {[
-                        { icon: '❤️', title: 'Live Vitals', desc: 'Heart rate, SpO₂, temperature, and more — streaming in real time.' },
-                        { icon: '⚠️', title: 'Smart Alerts', desc: 'AI-powered alerts notify doctors instantly when values go critical.' },
-                        { icon: '📋', title: 'PDF Reports', desc: 'Auto-generated health reports with trend analysis and doctor notes.' },
-                    ].map((f) => (
-                        <div key={f.title} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-left border border-white/20">
-                            <div className="text-3xl mb-3">{f.icon}</div>
-                            <h3 className="font-bold text-lg mb-2">{f.title}</h3>
-                            <p className="text-blue-100 text-sm leading-relaxed">{f.desc}</p>
-                        </div>
-                    ))}
-                </div>
-            </main>
-
-            <footer className="text-center text-blue-200 text-xs py-4">
-                &copy; {new Date().getFullYear()} MediFlow. Built with ❤ for better healthcare.
             </footer>
         </div>
     );
