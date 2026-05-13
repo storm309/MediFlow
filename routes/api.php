@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AiController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HealthMetricController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
@@ -96,6 +98,24 @@ Route::middleware('jwt.auth')->group(function () {
         Route::post('/',      [AppointmentController::class, 'store'])->middleware('role:admin,doctor');
         Route::patch('{id}',  [AppointmentController::class, 'update']);
         Route::delete('{id}', [AppointmentController::class, 'destroy'])->middleware('role:admin,doctor');
+    });
+
+    // ── AI Features ───────────────────────────────────────────────────────────
+    Route::prefix('ai')->group(function () {
+        Route::post('risk/{patientId}',          [AiController::class, 'analyseRisk']);
+        Route::get('risk/{patientId}/history',   [AiController::class, 'riskHistory']);
+        Route::post('report-summary/{patientId}',[AiController::class, 'reportSummary'])->middleware('role:admin,doctor');
+        Route::post('chat',                      [AiController::class, 'chat']);
+        Route::get('chat/history',               [AiController::class, 'chatHistory']);
+        Route::delete('chat/history',            [AiController::class, 'clearChat']);
+    });
+
+    // ── File Uploads ──────────────────────────────────────────────────────────
+    Route::prefix('uploads')->group(function () {
+        Route::post('/',              [FileUploadController::class, 'store']);
+        Route::get('/{patientId}',    [FileUploadController::class, 'index']);
+        Route::get('/serve/{id}',     [FileUploadController::class, 'serve']);
+        Route::delete('/{id}',        [FileUploadController::class, 'destroy']);
     });
 
     // ── WebSocket Auth (Reverb) ───────────────────────────────────────────────

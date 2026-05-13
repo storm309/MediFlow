@@ -35,4 +35,21 @@ return [
         ],
     ],
 
+    'gemini' => [
+        'api_key'    => env('GEMINI_API_KEY'),
+        'model'      => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        'max_tokens' => env('GEMINI_MAX_TOKENS', 2048),
+    ],
+
+    'cloudinary' => [
+        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+        'api_key'    => env('CLOUDINARY_API_KEY'),
+        'api_secret' => env('CLOUDINARY_API_SECRET'),
+    ],
+
+    'agora' => [
+        'app_id'          => env('AGORA_APP_ID'),
+        'app_certificate' => env('AGORA_APP_CERTIFICATE'),
+    ],
+
 ];

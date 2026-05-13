@@ -7,17 +7,19 @@ import notificationReducer  from './slices/notificationSlice';
 import reportReducer        from './slices/reportSlice';
 import appointmentReducer   from './slices/appointmentSlice';
 import uiReducer            from './slices/uiSlice';
+import aiReducer            from './slices/aiSlice';
 
 export const store = configureStore({
     reducer: {
-        auth:         authReducer,
-        patients:     patientReducer,
-        alerts:       alertReducer,
-        metrics:      metricsReducer,
+        auth:          authReducer,
+        patients:      patientReducer,
+        alerts:        alertReducer,
+        metrics:       metricsReducer,
         notifications: notificationReducer,
-        reports:      reportReducer,
-        appointments: appointmentReducer,
-        ui:           uiReducer,
+        reports:       reportReducer,
+        appointments:  appointmentReducer,
+        ui:            uiReducer,
+        ai:            aiReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({ serializableCheck: false }),

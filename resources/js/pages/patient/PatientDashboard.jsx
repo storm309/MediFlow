@@ -6,6 +6,7 @@ import { usePatientChannel } from '../../hooks/useRealtimeChannels';
 import MetricCard from '../../components/ui/MetricCard';
 import LiveChart from '../../components/ui/LiveChart';
 import AlertBadge from '../../components/ui/AlertBadge';
+import AiRiskCard from '../../components/ui/AiRiskCard';
 import { selectUser } from '../../redux/slices/authSlice';
 
 const CHART_FIELDS = [
@@ -73,6 +74,14 @@ export default function PatientDashboard() {
 
             {/* Trend chart */}
             <LiveChart data={recent} fields={CHART_FIELDS} title="Vitals Trend (Live)" />
+
+            {/* AI Risk Analysis */}
+            {patientId && (
+                <div>
+                    <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">AI Health Risk</h2>
+                    <AiRiskCard patientId={patientId} />
+                </div>
+            )}
 
             {/* Active alerts */}
             {allAlerts.length > 0 && (

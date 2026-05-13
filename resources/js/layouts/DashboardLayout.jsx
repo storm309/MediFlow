@@ -5,6 +5,7 @@ import { selectUser, selectInitialized } from '../redux/slices/authSlice';
 import { selectSidebarOpen, toggleSidebar } from '../redux/slices/uiSlice';
 import Sidebar from '../components/layout/Sidebar';
 import Topbar  from '../components/layout/Topbar';
+import AiChatWidget from '../components/ui/AiChatWidget';
 import { useAlertsChannel } from '../hooks/useRealtimeChannels';
 import { fetchAlertStats }  from '../redux/slices/alertSlice';
 import { fetchNotifications } from '../redux/slices/notificationSlice';
@@ -41,6 +42,8 @@ export default function DashboardLayout() {
                     <Outlet />
                 </main>
             </div>
+            {/* AI Chat Widget — available to all logged-in users */}
+            <AiChatWidget />
         </div>
     );
 }
