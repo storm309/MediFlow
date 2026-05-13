@@ -106,7 +106,7 @@ export default function ProfilePage() {
                         <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">{label}</label>
                         <input type="password" value={pwForm[name]}
                             onChange={(e) => setPwForm({ ...pwForm, [name]: e.target.value })}
-                            className="input-base" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                            className="input-base" placeholder="••••••••"
                         />
                     </div>
                 ))}
