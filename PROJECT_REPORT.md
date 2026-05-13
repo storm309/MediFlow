@@ -2,7 +2,405 @@
 
 ## 1. Project Overview
 
-**MediFlow** is a full-stack, real-time healthcare monitoring platform designed to connect patients, doctors, and administrators in a single unified web application. It enables live tracking of patient health vitals, automated alert generation, appointment management, health report generation, and role-based access control — all through a modern, responsive interface.
+**MediFlow** is a full-stack, real-time AI-powered healthcare monitoring platform designed to connect patients, doctors, and administrators in a single unified web application. It enables live tracking of patient health vitals, automated alert generation, AI-driven health risk prediction, an intelligent chat assistant, appointment management, health report generation, file uploads, PWA support, and role-based access control — all through a modern, responsive interface.
+
+---
+
+## 2. Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | Laravel 12 (PHP 8.2) |
+| **Database** | MongoDB Atlas (Cloud) via `mongodb-laravel` |
+| **Authentication** | JWT (tymon/jwt-auth v2.3) |
+| **Real-time** | Laravel Reverb (WebSocket, port 8080) |
+| **AI / LLM** | Google Gemini 2.5 Flash (via REST API) |
+| **Frontend** | React 18.3 + Vite 7 (SPA) |
+| **State Management** | Redux Toolkit v2.3 |
+| **Styling** | Tailwind CSS v4 |
+| **Charts** | Recharts v2.13 |
+| **Notifications** | react-hot-toast |
+| **PWA** | Web App Manifest + Service Worker |
+| **API Prefix** | `/api/v1` |
+
+---
+
+## 3. User Roles
+
+MediFlow supports three distinct user roles, each with a dedicated dashboard and permission set:
+
+### Admin
+- Full system access
+- Manage all users (doctors & patients)
+- View platform-wide analytics and KPIs
+- Audit activity logs
+- Delete users and manage the platform
+
+### Doctor
+- Monitor all assigned patients
+- View live health vitals with real-time charts
+- Receive critical/emergency alerts instantly
+- Generate and download PDF health reports
+- Manage patient appointments
+- View patient detail pages with full metric history
+- Access AI risk analysis for any patient
+
+### Patient
+- View personal health dashboard with latest vitals
+- Track health trends over time (live charts)
+- View and download personal health reports
+- Track upcoming appointments
+- Manage personal profile and password
+- Receive in-app notifications
+- AI health risk card on dashboard
+- AI chat assistant (floating widget)
+- Upload medical files (reports, prescriptions, scans, X-rays)
+
+---
+
+## 4. Core Features & Modules
+
+### 4.1 Authentication
+- **Register** — name, email, password (min 8 chars), role selection (doctor/patient)
+- **Login** — email + password, returns JWT Bearer token
+- **Logout** — token invalidation
+- **Forgot Password** — sends reset link via email
+- **Reset Password** — token-based secure reset
+- **Profile Update** — update name & phone number
+- **Password Change** — verify current password, set new password
+
+### 4.2 Health Metrics
+The central module of MediFlow. Records and tracks the following vitals per patient:
+
+| Metric | Unit | Alert Thresholds |
+|---|---|---|
+| Heart Rate | bpm | > 110 = critical |
+| SpO2 (Blood Oxygen) | % | < 90 = emergency |
+| Blood Pressure (Systolic) | mmHg | > 160 = critical |
+| Blood Pressure (Diastolic) | mmHg | > 100 = warning |
+| Body Temperature | °F | > 103 = fever alert |
+| Blood Sugar | mg/dL | > 250 = diabetes alert |
+| Respiratory Rate | breaths/min | tracked |
+| Weight | kg/lbs | tracked |
+| ECG Data | array | tracked |
+
+**Data sources:** manual entry, device, or simulation.
+
+**API Endpoints:**
+- `GET /patients/{id}/metrics` — paginated history
+- `GET /patients/{id}/metrics/recent` — last N readings for charts
+- `GET /patients/{id}/metrics/latest` — single latest reading
+- `GET /patients/{id}/metrics/averages` — weekly/monthly averages
+- `POST /patients/{id}/metrics` — record new reading
+
+### 4.3 Real-time Alerts
+- Automatically generated when a new health metric is recorded and thresholds are breached
+- **Severity levels:** `emergency`, `critical`, `warning`, `info`
+- **Alert types:** critical heart rate, low SpO2, high blood pressure, fever, high blood sugar
+- Doctors receive live WebSocket push notifications on new critical alerts
+- Alerts can be marked as read, resolved (with notes), or dismissed
+
+### 4.4 Real-time WebSocket (Laravel Reverb)
+- WebSocket server runs on port 8080
+- Patients are subscribed to private channels: `patient.{id}`
+- When a new health metric is recorded, an event is broadcast to the patient channel
+- Doctor dashboard and patient dashboard both listen live and update charts without page refresh
+
+### 4.5 Appointments
+- Doctors or admins can create appointments for patients
+- Fields: patient, doctor, date/time, type, location, status (scheduled/completed/cancelled)
+- Both doctors and patients can view their appointments
+- Patients can cancel; doctors/admins can update status
+
+### 4.6 Reports
+- Doctors/admins can generate health summary reports for any patient
+- Reports include: vital averages, alert summary, trend analysis
+- PDF download support
+- Doctors can add clinical notes to existing reports
+- AI-generated narrative summary embedded in PDF reports
+
+### 4.7 Notifications
+- In-app notification system for all roles
+- Notifications for: new alerts, appointment updates, report generation
+- Mark single or all notifications as read
+- Deletable notifications
+
+### 4.8 Admin Panel
+- Dashboard with KPIs: Total Users, Total Doctors, Total Patients, Active Alerts
+- Full user management (view, edit, delete any user)
+- Activity audit log (tracks login, registration, metric entries)
+- Platform analytics
+
+### 4.9 AI Health Risk Prediction (Gemini 2.5 Flash)
+- Analyses latest patient vitals + historical trend using Google Gemini 2.5 Flash
+- Returns structured risk assessment: `risk_score` (0–100), severity level, individual risk tags, clinical summary, and recommended actions
+- **Risk categories detected:** hypertension, cardiac risk, oxygen emergency, diabetes risk, fever severity
+- Results cached for 15 minutes (Redis) to avoid redundant API calls
+- Displayed as an `AiRiskCard` on the Patient Dashboard with a circular score gauge
+- All analyses persisted in MongoDB (`ai_analyses` collection) for audit history
+
+**API Endpoints:**
+- `POST /api/v1/ai/risk/{patientId}` — run risk analysis
+- `GET /api/v1/ai/risk/{patientId}/history` — past analyses
+- `POST /api/v1/ai/report-summary/{patientId}` — generate AI report narrative (admin/doctor)
+
+### 4.10 AI Chat Assistant
+- Floating chat widget available to all logged-in users (bottom-right corner)
+- Powered by Gemini 2.5 Flash with healthcare-specific system prompt
+- Multi-turn conversation with session-scoped history (last 12 messages sent as context)
+- User context (name, role) injected into each prompt
+- Conversations persisted in MongoDB (`chat_histories` collection) per user per session
+- Typing indicator, auto-scroll, markdown rendering (bold, line breaks)
+- Clear history button
+- Disclaimer: "Not a substitute for professional medical advice"
+
+**API Endpoints:**
+- `POST /api/v1/ai/chat` — send message, get AI reply
+- `GET /api/v1/ai/chat/history` — load session history
+- `DELETE /api/v1/ai/chat/history` — clear session history
+
+### 4.11 File Upload System
+- Patients, doctors, and admins can upload medical documents
+- **Supported types:** PDF, JPEG, PNG, WEBP, GIF — max 10 MB
+- **Document categories:** Report, Prescription, Scan, X-Ray, Other
+- UUID-based filenames prevent path traversal and collisions
+- Drag-and-drop upload UI with image preview, upload progress bar, and client-side validation
+- Access control: patients see only their own files; admins/doctors unrestricted
+- Files stored in `storage/app/uploads/{type}/`
+
+**API Endpoints:**
+- `POST /api/v1/uploads` — upload file
+- `GET /api/v1/uploads/{patientId}` — list patient files
+- `GET /api/v1/uploads/serve/{id}` — stream/download file
+- `DELETE /api/v1/uploads/{id}` — delete file
+
+### 4.12 Progressive Web App (PWA)
+- `public/manifest.json` — app name, short name, theme colour (`#2563eb`), display mode `standalone`
+- `public/sw.js` — service worker with network-first strategy; caches static assets for offline fallback; API calls are never cached
+- Manifest linked in `app.blade.php` with `theme-color` meta tag
+- Service worker registered automatically on app load (`main.jsx`)
+- Installable on Android, iOS, and desktop browsers
+
+---
+
+## 5. Database Models (MongoDB Collections)
+
+| Model | Collection | Purpose |
+|---|---|---|
+| `User` | `users` | All users (admin, doctor, patient) with role |
+| `Patient` | `patients` | Extended patient profile linked to user |
+| `HealthMetric` | `health_metrics` | All vital readings per patient |
+| `Alert` | `alerts` | Auto-generated health alerts |
+| `Appointment` | `appointments` | Doctor-patient appointment records |
+| `Report` | `reports` | Generated health summary reports |
+| `Notification` | `notifications` | In-app notifications per user |
+| `ActivityLog` | `activity_logs` | Audit trail for all actions |
+| `AiAnalysis` | `ai_analyses` | AI risk prediction results per patient |
+| `ChatHistory` | `chat_histories` | AI chat messages per user session |
+| `UploadedFile` | `uploaded_files` | Metadata for all uploaded medical files |
+
+---
+
+## 6. API Routes Summary
+
+### Public
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/v1/auth/register` | Register new user |
+| POST | `/api/v1/auth/login` | Login, returns JWT |
+| POST | `/api/v1/auth/forgot-password` | Send reset email |
+| POST | `/api/v1/auth/reset-password` | Reset with token |
+
+### Protected (JWT required)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/v1/auth/me` | Get logged-in user |
+| POST | `/api/v1/auth/logout` | Logout |
+| PUT | `/api/v1/auth/profile` | Update name/phone |
+| PUT | `/api/v1/auth/password` | Change password |
+| GET | `/api/v1/patients` | List patients (admin/doctor) |
+| GET | `/api/v1/patients/{id}` | Patient detail |
+| POST | `/api/v1/patients` | Create patient record |
+| PUT | `/api/v1/patients/{id}` | Update patient |
+| GET | `/api/v1/patients/{id}/metrics` | Metric history |
+| POST | `/api/v1/patients/{id}/metrics` | Record new metric |
+| GET | `/api/v1/patients/{id}/metrics/latest` | Latest reading |
+| GET | `/api/v1/alerts` | List alerts |
+| PATCH | `/api/v1/alerts/{id}/status` | Update alert status |
+| GET | `/api/v1/appointments` | List appointments |
+| POST | `/api/v1/appointments` | Create appointment |
+| PATCH | `/api/v1/appointments/{id}` | Update appointment |
+| GET | `/api/v1/reports` | List reports |
+| POST | `/api/v1/reports/generate` | Generate report |
+| GET | `/api/v1/reports/{id}/pdf` | Download PDF |
+| GET | `/api/v1/notifications` | List notifications |
+| PATCH | `/api/v1/notifications/{id}/read` | Mark read |
+| GET | `/api/v1/admin/dashboard` | Admin KPIs (admin only) |
+| GET | `/api/v1/admin/users` | All users (admin only) |
+| GET | `/api/v1/admin/analytics` | Platform analytics (admin only) |
+| POST | `/api/v1/ai/risk/{patientId}` | AI risk analysis |
+| GET | `/api/v1/ai/risk/{patientId}/history` | Past AI analyses |
+| POST | `/api/v1/ai/report-summary/{patientId}` | AI report summary (admin/doctor) |
+| POST | `/api/v1/ai/chat` | Send AI chat message |
+| GET | `/api/v1/ai/chat/history` | Get chat history |
+| DELETE | `/api/v1/ai/chat/history` | Clear chat history |
+| POST | `/api/v1/uploads` | Upload medical file |
+| GET | `/api/v1/uploads/{patientId}` | List patient files |
+| GET | `/api/v1/uploads/serve/{id}` | Download/stream file |
+| DELETE | `/api/v1/uploads/{id}` | Delete file |
+
+---
+
+## 7. Frontend Pages & Components
+
+### Pages
+| Page | Route | Access |
+|---|---|---|
+| Landing Page | `/` | Public |
+| Login | `/login` | Public |
+| Register | `/register` | Public |
+| Forgot Password | `/forgot-password` | Public |
+| Admin Dashboard | `/dashboard` | Admin |
+| Doctor Dashboard | `/dashboard` | Doctor |
+| Patient Dashboard | `/dashboard` | Patient |
+| Patient Detail | `/patients/:id` | Doctor/Admin |
+| Alerts | `/alerts` | All roles |
+| Appointments | `/appointments` | All roles |
+| Reports | `/reports` | All roles |
+| Profile | `/profile` | All roles |
+
+### Key Reusable Components
+| Component | Purpose |
+|---|---|
+| `AiChatWidget` | Floating AI chat window, all dashboards |
+| `AiRiskCard` | AI health risk score card with gauge |
+| `FileUpload` | Drag-and-drop file uploader with preview |
+| `MetricCard` | Vital reading card with icon and value |
+| `LiveChart` | Real-time Recharts line chart |
+| `AlertBadge` | Colour-coded severity badge |
+| `Sidebar` | Navigation sidebar with role-based links |
+| `Topbar` | Top navigation with notifications |
+
+---
+
+## 8. Security Features
+
+- **JWT Authentication** — stateless, token-based auth with refresh support
+- **Role-based Middleware** — `role:admin`, `role:admin,doctor` guards on sensitive routes
+- **Password Hashing** — bcrypt via Laravel's Hash facade
+- **Input Validation** — all endpoints validated server-side with Laravel Validator
+- **Private WebSocket Channels** — patients only receive their own live data
+- **MongoDB Atlas** — cloud database with IP allowlist and TLS encryption
+- **UUID Filenames** — uploaded files renamed to UUIDs, preventing path traversal
+- **MIME Type Validation** — server-side MIME check on all file uploads
+- **AI Access Control** — report-summary endpoint restricted to admin/doctor roles
+
+---
+
+## 9. Project Structure
+
+```
+MediFlow/
+├── app/
+│   ├── Http/Controllers/     # AuthController, PatientController, AiController, FileUploadController, etc.
+│   ├── Models/               # User, Patient, HealthMetric, Alert, AiAnalysis, ChatHistory, UploadedFile, etc.
+│   ├── Services/             # GeminiService, PatientService, HealthMetricService, etc.
+│   ├── Providers/            # AppServiceProvider
+├── routes/
+│   ├── api.php               # All API routes (/api/v1)
+│   └── web.php               # SPA catch-all
+├── public/
+│   ├── manifest.json         # PWA manifest
+│   └── sw.js                 # Service worker
+├── resources/
+│   └── js/
+│       ├── pages/            # React pages (auth/, admin/, doctor/, patient/, shared/)
+│       ├── components/       # Reusable UI (AiChatWidget, AiRiskCard, FileUpload, MetricCard, etc.)
+│       ├── redux/            # Store + slices (auth, metrics, alerts, ai, etc.)
+│       ├── services/         # Axios API client
+│       └── main.jsx          # React entry point + SW registration
+├── config/
+│   ├── database.php          # MongoDB connection config
+│   └── services.php          # Gemini, Cloudinary, Agora API config
+└── .env                      # Environment variables (never committed)
+```
+
+---
+
+## 10. Environment Variables Required
+
+```env
+# App
+APP_KEY=...
+APP_URL=http://localhost:8000
+
+# MongoDB Atlas
+DB_URL=mongodb+srv://user:pass@cluster.mongodb.net/mediflow
+
+# JWT
+JWT_SECRET=...
+
+# Laravel Reverb (WebSocket)
+REVERB_APP_KEY=...
+REVERB_APP_SECRET=...
+
+# AI — Gemini 2.5 Flash
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MAX_TOKENS=2048
+
+# Frontend flags
+VITE_GEMINI_ENABLED=true
+```
+
+---
+
+## 11. How to Run
+
+**Backend (Laravel):**
+```
+cd C:\Users\Asus\MediFlow
+C:\xampp\php\php.exe artisan serve
+```
+Runs on: http://localhost:8000
+
+**Frontend (React + Vite):**
+```
+cd C:\Users\Asus\MediFlow
+npm run dev
+```
+Runs on: http://localhost:5173
+
+**WebSocket (Reverb):**
+```
+C:\xampp\php\php.exe artisan reverb:start
+```
+Runs on: ws://localhost:8080
+
+---
+
+## 12. Test Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@mediflow.com | password |
+| Doctor | doctor@mediflow.com | password |
+| Patient | patient@mediflow.com | password |
+
+---
+
+## 13. Git Commits (Session Summary)
+
+| Commit | Description |
+|---|---|
+| `2af5337` | fix: encoding/garbled emoji across all JSX pages |
+| `a09068c` | fix: Change Password placeholder bullets |
+| `2e419cb` | feat: auth profile + password update endpoints |
+| `94571e8` | feat: AI health risk (Gemini), chat assistant, file uploads, PWA, Redux ai slice |
+
+---
+
+*MediFlow — AI-powered real-time patient monitoring for modern healthcare.*
 
 ---
 

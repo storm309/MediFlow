@@ -74,7 +74,8 @@ class GeminiService
     {
         $vitalsJson  = json_encode($vitals, JSON_PRETTY_PRINT);
         $historyJson = count($history) ? json_encode(array_slice($history, -10), JSON_PRETTY_PRINT) : 'No history available';
-        $patientInfo = $patient ? "Patient: {$patient['name']}, Age: {$patient['age'] ?? 'unknown'}" : 'Patient info not available';
+        $age         = $patient['age'] ?? 'unknown';
+        $patientInfo = $patient ? "Patient: {$patient['name']}, Age: {$age}" : 'Patient info not available';
 
         return <<<PROMPT
 You are MediFlow's clinical AI engine. Analyze the following patient vitals and return a JSON risk assessment.
