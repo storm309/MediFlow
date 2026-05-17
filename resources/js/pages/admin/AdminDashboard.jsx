@@ -8,6 +8,15 @@ import { selectUser } from '../../redux/slices/authSlice';
 
 const quickActions = [
     {
+        to: '/admin/users', label: 'Manage Users', desc: 'Edit user roles & manage access control',
+        gradient: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-500/25',
+        icon: (
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 8.646 4 4 0 010-8.646M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+        ),
+    },
+    {
         to: '/alerts', label: 'Manage Alerts', desc: 'Review & resolve patient alerts',
         gradient: 'from-red-500 to-rose-600', shadow: 'shadow-red-500/25',
         icon: (

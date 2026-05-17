@@ -46,12 +46,16 @@ Route::middleware('jwt.auth')->group(function () {
         Route::delete('users/{id}',  [AdminController::class, 'deleteUser']);
         Route::get('activity-logs',  [AdminController::class, 'activityLogs']);
         Route::get('analytics',      [AdminController::class, 'analytics']);
+        Route::get('doctors',        [AdminController::class, 'getDoctors']);
+        Route::post('assign-doctor', [AdminController::class, 'assignDoctor']);
+        Route::post('unassign-doctor', [AdminController::class, 'unassignDoctor']);
     });
 
     // ── Patients ─────────────────────────────────────────────────────────────
     Route::prefix('patients')->group(function () {
         Route::get('/',           [PatientController::class, 'index'])->middleware('role:admin,doctor');
         Route::post('/',          [PatientController::class, 'store'])->middleware('role:admin,doctor');
+        Route::post('/request-doctor', [PatientController::class, 'requestDoctor'])->middleware('role:patient');
         Route::get('{id}',        [PatientController::class, 'show']);
         Route::put('{id}',        [PatientController::class, 'update'])->middleware('role:admin,doctor');
         Route::delete('{id}',     [PatientController::class, 'destroy'])->middleware('role:admin');

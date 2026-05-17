@@ -136,4 +136,84 @@ class AdminController extends Controller
             ],
         ]);
     }
+
+    /**
+     * POST /admin/assign-doctor — Assign or update doctor for a patient.
+     */
+    public function assignDoctor(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|string',
+            'doctor_id'  => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $patient = Patient::findOrFail($request->patient_id);
+        $doctor  = User::where('_id', $request->doctor_id)->where('role', 'doctor')->firstOrFail();
+
+        $patient->update(['doctor_id' => (string) $doctor->_id]);
+
+        // Notify doctor and patient
+        $this->createNotification($patient->user_id, 'Patient assigned to you', 'system', "Dr. {$doctor->name} has been assigned to your care.");
+        $this->createNotification($doctor->_id, 'New patient assigned', 'system', "Patient {$patient->user->name} has been assigned to you.");
+
+        return response()->json([
+            'success' => true,
+            'message' => "Dr. {$doctor->name} assigned to patient successfully.",
+            'data'    => $patient->load('user', 'doctor'),
+        ]);
+    }
+
+    /**
+     * POST /admin/unassign-doctor — Remove doctor from patient.
+     */
+    public function unassignDoctor(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $patient = Patient::findOrFail($request->patient_id);
+        $doctorName = $patient->doctor?->name ?? 'Doctor';
+
+        $patient->update(['doctor_id' => null]);
+
+        $this->createNotification($patient->user_id, 'Doctor unassigned', 'system', "Your doctor {$doctorName} has been unassigned.");
+
+        return response()->json(['success' => true, 'message' => 'Doctor unassigned successfully.', 'data' => $patient]);
+    }
+
+    /**
+     * GET /admin/doctors — Get all doctors for assignment.
+     */
+    public function getDoctors(): JsonResponse
+    {
+        $doctors = User::where('role', 'doctor')->select('_id', 'name', 'email', 'phone', 'is_active')->get();
+        return response()->json(['success' => true, 'data' => $doctors]);
+    }
+
+    /**
+     * Helper: Create notification.
+     */
+    private function createNotification(string $userId, string $title, string $type, string $message): void
+    {
+        try {
+            \App\Models\Notification::create([
+                'user_id'    => $userId,
+                'type'       => $type,
+                'title'      => $title,
+                'message'    => $message,
+                'is_read'    => false,
+            ]);
+        } catch (\Exception $e) {
+            // Log silently if notification fails
+        }
+    }
 }

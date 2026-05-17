@@ -132,4 +132,47 @@ class PatientController extends Controller
         $patient = $this->patientService->assignDoctor($id, $request->doctor_id);
         return response()->json(['success' => true, 'data' => $patient, 'message' => 'Doctor assigned.']);
     }
+
+    /**
+     * POST /patients/request-doctor — Patient requests a doctor.
+     */
+    public function requestDoctor(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'doctor_id' => 'required|string',
+            'reason'    => 'sometimes|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $user = $request->user();
+        $patient = $user->patientProfile;
+
+        if (!$patient) {
+            return response()->json(['success' => false, 'message' => 'Patient profile not found'], 404);
+        }
+
+        // Check if doctor exists
+        $doctor = \App\Models\User::where('_id', $request->doctor_id)->where('role', 'doctor')->first();
+        if (!$doctor) {
+            return response()->json(['success' => false, 'message' => 'Doctor not found'], 404);
+        }
+
+        // Create notification for doctor
+        \App\Models\Notification::create([
+            'user_id'    => $request->doctor_id,
+            'type'       => 'doctor_request',
+            'title'      => "New Patient Request from {$user->name}",
+            'message'    => $request->reason ?? "Patient has requested your services.",
+            'is_read'    => false,
+            'metadata'   => ['patient_id' => (string)$patient->_id],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Request sent to Dr. {$doctor->name}. You will be notified when approved.",
+        ]);
+    }
 }

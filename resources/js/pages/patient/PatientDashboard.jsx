@@ -9,6 +9,7 @@ import MetricCard from '../../components/ui/MetricCard';
 import LiveChart from '../../components/ui/LiveChart';
 import AlertBadge from '../../components/ui/AlertBadge';
 import AiRiskCard from '../../components/ui/AiRiskCard';
+import RequestDoctorModal from '../../components/modals/RequestDoctorModal';
 import { selectUser } from '../../redux/slices/authSlice';
 import { format, parseISO, isFuture } from 'date-fns';
 import api from '../../services/api';
@@ -39,6 +40,7 @@ export default function PatientDashboard() {
     const [uploading, setUploading]     = useState(false);
     const [uploads, setUploads]         = useState([]);
     const [uploadErr, setUploadErr]     = useState('');
+    const [showRequestDoctor, setShowRequestDoctor] = useState(false);
 
     usePatientChannel(patientId);
 
@@ -99,6 +101,26 @@ export default function PatientDashboard() {
 
     return (
         <div className="space-y-8 p-6 max-w-7xl">
+            {/* Doctor Assignment Alert */}
+            {!user?.patient_profile?.doctor_id && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-start gap-4">
+                    <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="font-semibold text-amber-900 dark:text-amber-200">No Doctor Assigned Yet</h3>
+                        <p className="text-sm text-amber-800 dark:text-amber-300 mt-1">You need a doctor to generate reports and receive personalized health guidance. Request one now!</p>
+                        <button
+                            onClick={() => setShowRequestDoctor(true)}
+                            className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm transition"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m0 0h3m-3 0h3M9 9h.01M15 15H9.01M7 15h.01M5 21H3a2 2 0 01-2-2V3a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2h-2.25" /></svg>
+                            Request a Doctor
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-start justify-between">
                 <div>
@@ -288,6 +310,13 @@ export default function PatientDashboard() {
                     </div>
                 </div>
             )}
+
+            {/* Request Doctor Modal */}
+            <RequestDoctorModal 
+                isOpen={showRequestDoctor} 
+                onClose={() => setShowRequestDoctor(false)}
+                onSuccess={() => window.location.reload()}
+            />
         </div>
     );
 }

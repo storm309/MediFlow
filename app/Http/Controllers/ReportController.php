@@ -51,6 +51,15 @@ class ReportController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        // Check if patient has assigned doctor
+        $patient = \App\Models\Patient::findOrFail($request->patient_id);
+        if (!$patient->doctor_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Patient must have an assigned doctor before generating a report. Please request a doctor assignment first.',
+            ], 422);
+        }
+
         $doctorId = $request->user()->isDoctor() ? (string) $request->user()->_id : null;
 
         $report = $this->reportService->generate(
