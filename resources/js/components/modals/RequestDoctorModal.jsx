@@ -21,7 +21,7 @@ export default function RequestDoctorModal({ isOpen, onClose, onSuccess }) {
     const loadDoctors = async () => {
         setLoading(true);
         try {
-            const res = await api.get('/admin/doctors');
+            const res = await api.get('/doctors');
             setDoctors(res.data.data ?? []);
         } catch (err) {
             toast.error('Failed to load doctors');

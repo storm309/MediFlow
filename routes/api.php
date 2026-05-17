@@ -74,6 +74,9 @@ Route::middleware('jwt.auth')->group(function () {
         });
     });
 
+    // ── Doctors (Public list of verified doctors) ─────────────────────────────
+    Route::get('doctors', [AdminController::class, 'getDoctors']);
+
     // ── Alerts ───────────────────────────────────────────────────────────────
     Route::prefix('alerts')->group(function () {
         Route::get('/',             [AlertController::class, 'index']);

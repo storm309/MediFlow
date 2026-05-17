@@ -255,9 +255,6 @@ class AdminController extends Controller
             $this->createNotification($doctor->_id, 'Account Created - Pending Verification', 'system',
                 'Your doctor account has been created by admin. Please wait for verification.');
 
-            $this->logActivity((string)$request->user()->_id, 'create', 'doctor', (string)$doctor->_id,
-                "Doctor created: {$doctor->email} - License: {$doctor->medical_license}");
-
             return response()->json([
                 'success' => true,
                 'message' => "Doctor account created. Verification status: pending",
@@ -325,9 +322,6 @@ class AdminController extends Controller
             }
 
             $this->createNotification($doctor->_id, $title, 'system', $message);
-
-            $this->logActivity((string)$request->user()->_id, 'verify', 'doctor', (string)$doctor->_id,
-                "Doctor {$request->status}: {$doctor->email}");
 
             return response()->json([
                 'success' => true,

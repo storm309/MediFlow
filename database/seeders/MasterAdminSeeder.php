@@ -14,7 +14,7 @@ class MasterAdminSeeder extends Seeder
     {
         // Check if master admin already exists
         $existing = User::where('role', 'admin')->where('is_master_admin', true)->exists();
-        
+
         if (!$existing) {
             User::create([
                 'name'                => 'Master Admin',
