@@ -7,6 +7,8 @@ const colorMap = {
     yellow: { bg: 'from-amber-500 to-orange-500',  ring: 'shadow-amber-500/25',  light: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-600 dark:text-amber-400' },
     purple: { bg: 'from-purple-500 to-violet-600', ring: 'shadow-purple-500/25', light: 'bg-purple-50 dark:bg-purple-900/20', text: 'text-purple-600 dark:text-purple-400' },
     cyan:   { bg: 'from-cyan-500 to-sky-600',      ring: 'shadow-cyan-500/25',   light: 'bg-cyan-50  dark:bg-cyan-900/20',  text: 'text-cyan-600  dark:text-cyan-400' },
+    orange: { bg: 'from-orange-500 to-red-400',    ring: 'shadow-orange-500/25', light: 'bg-orange-50 dark:bg-orange-900/20', text: 'text-orange-600 dark:text-orange-400' },
+    indigo: { bg: 'from-indigo-500 to-blue-600',   ring: 'shadow-indigo-500/25', light: 'bg-indigo-50 dark:bg-indigo-900/20', text: 'text-indigo-600 dark:text-indigo-400' },
 };
 
 const TrendArrow = ({ trend }) => {

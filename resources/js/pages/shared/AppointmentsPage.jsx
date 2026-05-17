@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchAppointments, createAppointment, selectAppointments } from '../../redux/slices/appointmentSlice';
+import { fetchAppointments, createAppointment, cancelAppointment, selectAppointments } from '../../redux/slices/appointmentSlice';
+import { selectUser } from '../../redux/slices/authSlice';
 import { format, parseISO } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -22,8 +23,11 @@ export default function AppointmentsPage() {
     const dispatch     = useDispatch();
     const appointments = useSelector(selectAppointments);
     const { loading }  = useSelector((s) => s.appointments);
+    const user         = useSelector(selectUser);
+    const isDoctor     = user?.role === 'doctor';
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState({ title: '', description: '', scheduled_at: '', duration: 30, type: 'consultation', location: '' });
+    const [cancellingId, setCancellingId] = useState(null);
 
     useEffect(() => { dispatch(fetchAppointments()); }, [dispatch]);
 
@@ -36,6 +40,19 @@ export default function AppointmentsPage() {
             setForm({ title: '', description: '', scheduled_at: '', duration: 30, type: 'consultation', location: '' });
         } catch (err) {
             toast.error(err ?? 'Failed to create appointment');
+        }
+    };
+
+    const handleCancel = async (a) => {
+        if (!window.confirm(`Cancel appointment "${a.title}"?`)) return;
+        setCancellingId(a._id);
+        try {
+            await dispatch(cancelAppointment({ id: a._id, reason: 'Cancelled' })).unwrap();
+            toast.success('Appointment cancelled');
+        } catch (err) {
+            toast.error(err ?? 'Failed to cancel');
+        } finally {
+            setCancellingId(null);
         }
     };
 
@@ -118,6 +135,15 @@ export default function AppointmentsPage() {
                                 <div className="flex items-center gap-2">
                                     <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${typeCfg.cls}`}>{typeCfg.label}</span>
                                     <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${statusCfg.cls}`}>{statusCfg.label}</span>
+                                    {isDoctor && a.status !== 'cancelled' && a.status !== 'completed' && (
+                                        <button
+                                            onClick={() => handleCancel(a)}
+                                            disabled={cancellingId === a._id}
+                                            className="text-xs text-red-600 hover:text-red-700 font-semibold px-2.5 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+                                        >
+                                            {cancellingId === a._id ? '...' : 'Cancel'}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );

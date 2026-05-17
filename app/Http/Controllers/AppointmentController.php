@@ -15,8 +15,9 @@ class AppointmentController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = min((int) $request->get('per_page', 15), 100);
-        $status  = $request->get('status');
+        $perPage   = min((int) $request->get('per_page', 100), 200);
+        $status    = $request->get('status');
+        $patientId = $request->get('patient_id');
 
         $query = Appointment::with([
             'patient.user:_id,name,email',
@@ -31,7 +32,8 @@ class AppointmentController extends Controller
             if ($patient) $query->where('patient_id', (string) $patient->_id);
         }
 
-        if ($status) $query->where('status', $status);
+        if ($status)    $query->where('status', $status);
+        if ($patientId) $query->where('patient_id', $patientId);
 
         $appointments = $query->orderBy('scheduled_at', 'asc')->paginate($perPage);
 
