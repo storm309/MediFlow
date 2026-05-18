@@ -2,76 +2,25 @@ import React from 'react';
 
 /**
  * MediFlow Logo Component
- * Displays the official MediFlow medical cross logo with heart and arrow design
- *
- * Props:
- * - size: 'sm' (24px), 'md' (32px), 'lg' (48px), 'xl' (64px), '2xl' (80px), 'full' - default 'md'
- * - variant: 'icon' (image only), 'text' (image + text), 'text-only' - default 'icon'
- * - showBadge: Display role badge below logo - default false
- * - badge: Role badge text ('Admin', 'Doctor', 'Patient') - optional
- * - shape: 'circle' (rounded-full), 'rounded' (rounded-lg), 'square' (no radius) - default 'circle'
- * - withBg: Add background container - default true
- * - withBorder: Add border around logo - default false
- * - interactive: Add hover effects - default true
+ * Displays the official MediFlow logo
  */
-export default function MediFlowLogo({
-    size = 'md',
-    variant = 'icon',
-    showBadge = false,
-    badge = null,
-    shape = 'circle',
-    withBg = true,
-    withBorder = false,
-    interactive = true,
-    className = ''
-}) {
+export default function MediFlowLogo({ size = 'md', className = '' }) {
     const sizeMap = {
         sm: 'w-6 h-6',
         md: 'w-8 h-8',
         lg: 'w-12 h-12',
         xl: 'w-16 h-16',
         '2xl': 'w-20 h-20',
-        full: 'w-full max-w-xs'
     };
 
-    const shapeMap = {
-        circle: 'rounded-full',
-        rounded: 'rounded-xl',
-        square: 'rounded-none'
-    };
-
-    const textSizeMap = {
-        sm: 'text-xs',
-        md: 'text-sm',
-        lg: 'text-lg',
-        xl: 'text-2xl',
-        '2xl': 'text-3xl',
-        full: 'text-4xl'
-    };
-
-    const badgeSizeMap = {
-        sm: 'text-[10px] px-1.5 py-0.5',
-        md: 'text-xs px-2 py-1',
-        lg: 'text-sm px-3 py-1.5',
-        xl: 'text-base px-4 py-2',
-        '2xl': 'text-lg px-5 py-2.5',
-        full: 'text-xl px-6 py-3'
-    };
-
-    const containerClasses = `
-        flex flex-col items-center gap-2 ${className}
-    `.trim();
-
-    const logoClasses = `
-        ${sizeMap[size]}
-        ${shapeMap[shape]}
-        object-cover
-        object-center
-        transition-all duration-300
-        ${interactive ? 'hover:scale-110 hover:shadow-lg cursor-pointer' : ''}
-        ${withBorder ? 'border-2 border-blue-200 dark:border-blue-800' : ''}
-        shadow-md dark:shadow-xl
-    `.replace(/\s+/g, ' ').trim();
+    return (
+        <img
+            src="/images/mediflow-logo.jpg"
+            alt="MediFlow"
+            className={`${sizeMap[size] || sizeMap['md']} object-cover ${className}`}
+        />
+    );
+}
 
     return (
         <div className={containerClasses}>

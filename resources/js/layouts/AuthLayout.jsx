@@ -23,10 +23,8 @@ export default function AuthLayout() {
                 </div>
 
                 {/* Logo */}
-                <Link to="/" className="relative flex items-center gap-3 w-fit hover:opacity-85 transition-opacity">
-                    <div className="flex items-center justify-center p-2.5 bg-gradient-to-br from-blue-400/30 via-blue-500/20 to-cyan-400/30 rounded-full shadow-lg ring-2 ring-blue-400/40 hover:shadow-xl transition-all duration-300">
-                        <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-10 h-10 rounded-full object-cover object-center" />
-                    </div>
+                <Link to="/" className="relative flex items-center gap-3 w-fit">
+                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-10 h-10 rounded-lg shadow-lg" />
                     <div>
                         <p className="font-black text-xl text-white tracking-tight">MediFlow</p>
                         <p className="text-xs text-blue-300">Patient Monitoring</p>

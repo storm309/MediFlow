@@ -85,9 +85,7 @@ export default function Sidebar({ open }) {
         >
             {/* Logo */}
             <div className="px-5 py-5 border-b border-slate-700/60 flex items-center gap-3">
-                <div className="flex items-center justify-center p-2 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full shadow-lg ring-2 ring-white/20 hover:shadow-xl transition-all duration-300 shrink-0">
-                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-9 h-9 rounded-full object-cover object-center" />
-                </div>
+                <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-9 h-9 rounded-lg" />
                 <div className="min-w-0">
                     <p className="font-black text-white text-base leading-none tracking-tight">MediFlow</p>
                     <span className={`text-xs px-1.5 py-0.5 rounded-full text-white font-semibold mt-0.5 inline-block ${roleBadgeBg}`}>
