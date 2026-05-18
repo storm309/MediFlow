@@ -3,19 +3,19 @@ import React from 'react';
 /**
  * MediFlow Logo Component
  * Displays the official MediFlow medical cross logo with heart and arrow design
- * 
+ *
  * Props:
  * - size: 'sm' (24px), 'md' (32px), 'lg' (48px), 'xl' (64px), 'full' - default 'md'
  * - variant: 'icon' (image only), 'text' (image + text), 'text-only' - default 'icon'
  * - showBadge: Display role badge below logo - default false
  * - badge: Role badge text ('Admin', 'Doctor', 'Patient') - optional
  */
-export default function MediFlowLogo({ 
-    size = 'md', 
-    variant = 'icon', 
-    showBadge = false, 
+export default function MediFlowLogo({
+    size = 'md',
+    variant = 'icon',
+    showBadge = false,
     badge = null,
-    className = '' 
+    className = ''
 }) {
     const sizeMap = {
         sm: 'w-6 h-6',
@@ -45,9 +45,9 @@ export default function MediFlowLogo({
         <div className={`flex flex-col items-center gap-2 ${className}`}>
             {/* Logo Image */}
             {(variant === 'icon' || variant === 'text') && (
-                <img 
-                    src="/images/mediflow-logo.jpg" 
-                    alt="MediFlow" 
+                <img
+                    src="/images/mediflow-logo.jpg"
+                    alt="MediFlow"
                     className={`${sizeMap[size]} rounded-lg object-cover shadow-md`}
                 />
             )}

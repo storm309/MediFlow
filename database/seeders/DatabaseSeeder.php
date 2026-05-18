@@ -12,12 +12,22 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // --- Admin ---
+        // --- Admin 1: admin@mediflow.com ---
         User::where('email', 'admin@mediflow.com')->delete();
         User::create([
-            'name'      => 'System Admin',
+            'name'      => 'MediFlow Admin',
             'email'     => 'admin@mediflow.com',
-            'password'  => Hash::make('password'),
+            'password'  => Hash::make('Admin@MediFlow123'),
+            'role'      => 'admin',
+            'is_active' => true,
+        ]);
+
+        // --- Admin 2: shivamkumarp447@gmail.com ---
+        User::where('email', 'shivamkumarp447@gmail.com')->delete();
+        User::create([
+            'name'      => 'Shivam Kumar',
+            'email'     => 'shivamkumarp447@gmail.com',
+            'password'  => Hash::make('Admin@MediFlow123'),
             'role'      => 'admin',
             'is_active' => true,
         ]);
@@ -75,7 +85,14 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('✅ MediFlow seeded: admin@mediflow.com | doctor@mediflow.com | patient@mediflow.com — password: password');
+        $this->command->info('✅ MediFlow seeded:');
+        $this->command->info('   ADMINS:');
+        $this->command->info('      • admin@mediflow.com');
+        $this->command->info('      • shivamkumarp447@gmail.com');
+        $this->command->info('   OTHERS:');
+        $this->command->info('      • doctor@mediflow.com');
+        $this->command->info('      • patient@mediflow.com');
+        $this->command->info('   PASSWORD: Admin@MediFlow123');
     }
 }
 
