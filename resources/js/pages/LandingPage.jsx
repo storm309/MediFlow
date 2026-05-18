@@ -94,7 +94,7 @@ export default function LandingPage() {
             }`}>
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <Link to="/" className="flex items-center gap-2.5">
-                        <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-9 h-9 rounded-lg shadow-md" />
+                        <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-9 h-9 rounded-lg" />
                         <div>
                             <p className={`font-bold text-lg leading-none tracking-tight ${scrolled ? 'text-slate-900' : 'text-white'}`}>MediFlow</p>
                             <p className={`text-xs leading-none ${scrolled ? 'text-slate-500' : 'text-blue-200'}`}>Patient Monitoring</p>

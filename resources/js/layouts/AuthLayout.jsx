@@ -24,7 +24,7 @@ export default function AuthLayout() {
 
                 {/* Logo */}
                 <Link to="/" className="relative flex items-center gap-3 w-fit">
-                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-10 h-10 rounded-lg shadow-lg" />
+                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-10 h-10 rounded-lg" />
                     <div>
                         <p className="font-black text-xl text-white tracking-tight">MediFlow</p>
                         <p className="text-xs text-blue-300">Patient Monitoring</p>

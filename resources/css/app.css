@@ -104,12 +104,12 @@ html { scroll-behavior: smooth; }
   background-size: 200% 100%;
 }
 
-.badge-pulse   { animation: pulseBadge 1.8s ease infinite; }
-.animate-float { animation: float 3s ease-in-out infinite; }
-.animate-heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
-.animate-fade-in-up { animation: fadeInUp 0.4s ease-out both; }
-.animate-fade-in    { animation: fadeIn 0.3s ease-out both; }
-.animate-slide-left { animation: slideInLeft 0.3s ease-out both; }
+.badge-pulse   { animation: none; opacity: 1; transform: scale(1); }
+.animate-float { animation: none; transform: none; }
+.animate-heartbeat { animation: none; transform: scale(1); }
+.animate-fade-in-up { opacity: 1; transform: translateY(0); }
+.animate-fade-in    { opacity: 1; }
+.animate-slide-left { opacity: 1; transform: translateX(0); }
 
 /* ─── Glass / Card ───────────────────────────────────────── */
 .glass {
