@@ -23,8 +23,12 @@ export default function AuthLayout() {
                 </div>
 
                 {/* Logo */}
-                <Link to="/" className="relative flex items-center gap-3 w-fit">
-                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-10 h-10 rounded-lg" />
+                <Link to="/" className="relative flex items-center gap-2.5 w-fit">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg className="w-6 h-6 text-white animate-heartbeat" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
                     <div>
                         <p className="font-black text-xl text-white tracking-tight">MediFlow</p>
                         <p className="text-xs text-blue-300">Patient Monitoring</p>

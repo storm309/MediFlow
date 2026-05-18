@@ -1,0 +1,118 @@
+commit 87da5bf888cdf82bebf3090c47ffd8d6d5c4e05b
+Author: Shivam <shivamkumarp447@gmail.com>
+Date:   Mon May 18 19:34:06 2026 +0530
+
+    revert: Restore original simple logo styling without fancy effects
+
+diff --git a/resources/js/components/layout/Topbar.jsx b/resources/js/components/layout/Topbar.jsx
+index eaabd13..b7094f2 100644
+--- a/resources/js/components/layout/Topbar.jsx
++++ b/resources/js/components/layout/Topbar.jsx
+@@ -40,10 +40,8 @@ export default function Topbar({ onToggleSidebar }) {
+             </button>
+ 
+             {/* Brand with Logo */}
+-            <Link to="/" className="hidden md:flex items-center gap-3 ml-1 hover:opacity-85 transition-opacity">
+-                <div className="flex items-center justify-center p-2 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 rounded-full shadow-lg ring-2 ring-blue-200 dark:ring-blue-900/50 hover:shadow-xl transition-all duration-300">
+-                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-full object-cover object-center" />
+-                </div>
++            <Link to="/" className="hidden md:flex items-center gap-2 ml-1">
++                <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-lg" />
+                 <span className="font-black text-slate-900 dark:text-white text-sm tracking-tight">MediFlow</span>
+             </Link>
+ 
+
+commit f2a3d8b840b098be31efeedd9ea001794bc33316
+Author: Shivam <shivamkumarp447@gmail.com>
+Date:   Mon May 18 11:02:25 2026 +0530
+
+    style: Enhance logo circular shape and visibility across all pages
+
+diff --git a/resources/js/components/layout/Topbar.jsx b/resources/js/components/layout/Topbar.jsx
+index 584730f..eaabd13 100644
+--- a/resources/js/components/layout/Topbar.jsx
++++ b/resources/js/components/layout/Topbar.jsx
+@@ -40,9 +40,9 @@ export default function Topbar({ onToggleSidebar }) {
+             </button>
+ 
+             {/* Brand with Logo */}
+-            <Link to="/" className="hidden md:flex items-center gap-3 ml-1 hover:opacity-80 transition-opacity">
+-                <div className="p-1.5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-full shadow-md hover:shadow-lg transition-shadow">
+-                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-full object-cover" />
++            <Link to="/" className="hidden md:flex items-center gap-3 ml-1 hover:opacity-85 transition-opacity">
++                <div className="flex items-center justify-center p-2 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 rounded-full shadow-lg ring-2 ring-blue-200 dark:ring-blue-900/50 hover:shadow-xl transition-all duration-300">
++                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-full object-cover object-center" />
+                 </div>
+                 <span className="font-black text-slate-900 dark:text-white text-sm tracking-tight">MediFlow</span>
+             </Link>
+
+commit 448761b4d9012604009c4e967981d9726c522569
+Author: Shivam <shivamkumarp447@gmail.com>
+Date:   Mon May 18 10:59:49 2026 +0530
+
+    style: Improve logo UI with circular shape and enhanced visual design
+
+diff --git a/resources/js/components/layout/Topbar.jsx b/resources/js/components/layout/Topbar.jsx
+index 3d798bb..584730f 100644
+--- a/resources/js/components/layout/Topbar.jsx
++++ b/resources/js/components/layout/Topbar.jsx
+@@ -40,8 +40,10 @@ export default function Topbar({ onToggleSidebar }) {
+             </button>
+ 
+             {/* Brand with Logo */}
+-            <Link to="/" className="hidden md:flex items-center gap-2 ml-1">
+-                <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-lg object-cover shadow-md" />
++            <Link to="/" className="hidden md:flex items-center gap-3 ml-1 hover:opacity-80 transition-opacity">
++                <div className="p-1.5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-full shadow-md hover:shadow-lg transition-shadow">
++                    <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-full object-cover" />
++                </div>
+                 <span className="font-black text-slate-900 dark:text-white text-sm tracking-tight">MediFlow</span>
+             </Link>
+ 
+
+commit e935acc9d0743735705e473acec865c0d94f3737
+Author: Shivam <shivamkumarp447@gmail.com>
+Date:   Mon May 18 10:56:16 2026 +0530
+
+    feat: Integrate MediFlow official logo throughout application
+
+diff --git a/resources/js/components/layout/Topbar.jsx b/resources/js/components/layout/Topbar.jsx
+index ee5d50c..3d798bb 100644
+--- a/resources/js/components/layout/Topbar.jsx
++++ b/resources/js/components/layout/Topbar.jsx
+@@ -39,13 +39,9 @@ export default function Topbar({ onToggleSidebar }) {
+                 </svg>
+             </button>
+ 
+-            {/* Brand */}
++            {/* Brand with Logo */}
+             <Link to="/" className="hidden md:flex items-center gap-2 ml-1">
+-                <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+-                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+-                    </svg>
+-                </div>
++                <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-lg object-cover shadow-md" />
+                 <span className="font-black text-slate-900 dark:text-white text-sm tracking-tight">MediFlow</span>
+             </Link>
+ 
+
+commit 2e5f89a5ff874f967c6cce4b0b04905f7ea8b510
+Author: Shivam <shivamkumarp447@gmail.com>
+Date:   Sun May 17 20:31:52 2026 +0530
+
+    Fix: Notification bell now opens notifications page instead of profile
+
+diff --git a/resources/js/components/layout/Topbar.jsx b/resources/js/components/layout/Topbar.jsx
+index 08501b0..ee5d50c 100644
+--- a/resources/js/components/layout/Topbar.jsx
++++ b/resources/js/components/layout/Topbar.jsx
+@@ -70,7 +70,7 @@ export default function Topbar({ onToggleSidebar }) {
+ 
+             {/* Notifications bell */}
+             <Link
+-                to="/profile"
++                to="/notifications"
+                 className="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                 title="Notifications"
+             >

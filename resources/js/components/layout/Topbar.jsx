@@ -39,9 +39,13 @@ export default function Topbar({ onToggleSidebar }) {
                 </svg>
             </button>
 
-            {/* Brand with Logo */}
+            {/* Brand */}
             <Link to="/" className="hidden md:flex items-center gap-2 ml-1">
-                <img src="/images/mediflow-logo.jpg" alt="MediFlow" className="w-8 h-8 rounded-lg" />
+                <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                </div>
                 <span className="font-black text-slate-900 dark:text-white text-sm tracking-tight">MediFlow</span>
             </Link>
 
