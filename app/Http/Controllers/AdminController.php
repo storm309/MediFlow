@@ -22,15 +22,21 @@ class AdminController extends Controller
      */
     public function dashboard(): JsonResponse
     {
+        $totalPatients = User::where('role', 'patient')->count();
+        $totalDoctors = User::where('role', 'doctor')->count();
+        $totalAdmins = User::where('role', 'admin')->count();
+        
         return response()->json([
             'success' => true,
             'data'    => [
-                'total_patients'   => User::where('role', 'patient')->count(),
-                'total_doctors'    => User::where('role', 'doctor')->count(),
-                'total_alerts'     => Alert::count(),
-                'unread_alerts'    => Alert::where('status', 'unread')->count(),
-                'critical_alerts'  => Alert::whereIn('severity', ['critical', 'emergency'])->count(),
-                'today_alerts'     => Alert::whereDate('created_at', today())->count(),
+                'total_users'        => $totalPatients + $totalDoctors + $totalAdmins,
+                'total_patients'     => $totalPatients,
+                'total_doctors'      => $totalDoctors,
+                'total_admins'       => $totalAdmins,
+                'total_alerts'       => Alert::count(),
+                'unread_alerts'      => Alert::where('status', 'unread')->count(),
+                'critical_alerts'    => Alert::whereIn('severity', ['critical', 'emergency'])->count(),
+                'today_alerts'       => Alert::whereDate('created_at', today())->count(),
                 'appointments_today' => Appointment::whereDate('scheduled_at', today())->count(),
                 'critical_patients'  => Patient::where('is_critical', true)->count(),
                 'new_users_today'    => User::whereDate('created_at', today())->count(),

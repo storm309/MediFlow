@@ -22,7 +22,7 @@ class AlertController extends Controller
         $status    = $request->get('status');
         $patientId = $request->get('patient_id');
 
-        $query = Alert::with(['patient.user:_id,name']);
+        $query = Alert::with(['patient.user:_id,name', 'doctor:_id,name,specialization']);
 
         // Doctors see alerts for their patients only
         if ($request->user()->isDoctor()) {

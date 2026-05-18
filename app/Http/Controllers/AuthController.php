@@ -140,12 +140,12 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         // Eager load patient profile for patients
         if ($user->isPatient()) {
             $user->load('patientProfile');
         }
-        
+
         $data = $user->toArray();
 
         if ($user->isPatient()) {

@@ -13,6 +13,9 @@ class EventServiceProvider extends ServiceProvider
         AlertCreated::class => [
             SendAlertNotification::class,
         ],
+        HealthMetricUpdated::class => [
+            // Listeners can be added here as needed for real-time updates
+        ],
     ];
 
     public function boot(): void

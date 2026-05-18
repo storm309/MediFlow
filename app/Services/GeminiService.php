@@ -20,6 +20,9 @@ class GeminiService
     public function __construct()
     {
         $this->apiKey    = config('services.gemini.api_key');
+        if (!$this->apiKey) {
+            throw new \Exception('Gemini API key not configured. Set GEMINI_API_KEY in .env file.');
+        }
         $this->model     = config('services.gemini.model', 'gemini-2.5-flash');
         $this->maxTokens = (int) config('services.gemini.max_tokens', 2048);
     }

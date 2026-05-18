@@ -36,6 +36,12 @@ class SocialAuthController extends Controller
                 'email_verified_at' => now(),
                 'is_active'         => true,
             ]);
+            
+            // Create patient profile for new patient
+            \App\Models\Patient::create([
+                'user_id'    => (string) $user->_id,
+                'is_critical' => false,
+            ]);
         } else {
             $updates = [];
             if (!$user->google_id) $updates['google_id'] = $googleUser->getId();

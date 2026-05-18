@@ -112,12 +112,26 @@ export default function AppointmentsPage() {
     };
 
     const handleStatusChange = async (a, newStatus) => {
+        // Validate status transition
+        const validTransitions = {
+            scheduled:  ['confirmed', 'cancelled'],
+            confirmed:  ['completed', 'no_show', 'cancelled'],
+            completed:  [],  // No transitions from completed
+            cancelled:  [],  // No transitions from cancelled
+            no_show:    [],  // No transitions from no_show
+        };
+        
+        if (!validTransitions[a.status]?.includes(newStatus)) {
+            toast.error(`Cannot transition from ${a.status} to ${newStatus}`);
+            return;
+        }
+        
         setUpdatingId(a._id);
         try {
             await dispatch(updateAppointment({ id: a._id, data: { status: newStatus } })).unwrap();
             toast.success(`Marked as ${newStatus}`);
         } catch (err) {
-            toast.error(err ?? 'Failed to update');
+            toast.error(err?.response?.data?.message ?? err ?? 'Failed to update');
         } finally {
             setUpdatingId(null);
         }

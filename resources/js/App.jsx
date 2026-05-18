@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector }             from 'react-redux';
 import { selectUser, selectInitialized } from './redux/slices/authSlice';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Layouts
 import DashboardLayout from './layouts/DashboardLayout';
@@ -52,7 +53,8 @@ export default function App() {
     const user = useSelector(selectUser);
 
     return (
-        <Routes>
+        <ErrorBoundary>
+            <Routes>
             {/* Public */}
             <Route path="/"                element={<LandingPage />} />
             <Route element={<AuthLayout />}>
@@ -131,6 +133,7 @@ export default function App() {
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+            </Routes>
+        </ErrorBoundary>
     );
 }

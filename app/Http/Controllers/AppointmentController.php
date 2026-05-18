@@ -97,6 +97,7 @@ class AppointmentController extends Controller
 
         if (($data['status'] ?? '') === 'cancelled') {
             $data['cancelled_at'] = now();
+            unset($data['completed_at']); // Clear completed_at if cancelling
         }
         if (($data['status'] ?? '') === 'completed') {
             $data['completed_at'] = now();

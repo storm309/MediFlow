@@ -95,9 +95,9 @@ class HealthMetricService
 
     private function updateCriticalStatus(HealthMetric $metric): void
     {
-        $isCritical = $metric->heart_rate > 110
-            || $metric->spo2 < 90
-            || $metric->temperature > 103;
+        $isCritical = ($metric->heart_rate ?? 0) > 110
+            || ($metric->spo2 ?? 100) < 90
+            || ($metric->temperature ?? 0) > 103;
 
         Patient::where('_id', $metric->patient_id)
             ->update(['is_critical' => $isCritical, 'last_checkup' => now()]);

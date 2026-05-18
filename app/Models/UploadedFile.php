@@ -23,4 +23,14 @@ class UploadedFile extends Model
     protected $casts = [
         'size_bytes' => 'integer',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', '_id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id', '_id');
+    }
 }

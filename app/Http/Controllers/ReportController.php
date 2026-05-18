@@ -43,7 +43,7 @@ class ReportController extends Controller
     public function generate(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|string',
+            'patient_id' => 'required|string|regex:/^[a-f\d]{24}$/i',
             'period'     => 'required|in:daily,weekly,monthly',
         ]);
 

@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -22,29 +23,31 @@ class AuthService
      */
     public function register(array $data): array
     {
-        $user = $this->userRepo->create([
-            'name'      => $data['name'],
-            'email'     => $data['email'],
-            'password'  => $data['password'],   // model casts 'hashed'
-            'role'      => $data['role'] ?? 'patient',
-            'phone'     => $data['phone'] ?? null,
-            'is_active' => true,
-        ]);
-
-        // Create patient profile if registering as patient
-        if ($user->isPatient()) {
-            \App\Models\Patient::create([
-                'user_id'    => (string) $user->_id,
-                'is_critical' => false,
+        return DB::transaction(function () use ($data) {
+            $user = $this->userRepo->create([
+                'name'      => $data['name'],
+                'email'     => $data['email'],
+                'password'  => $data['password'],   // model casts 'hashed'
+                'role'      => $data['role'] ?? 'patient',
+                'phone'     => $data['phone'] ?? null,
+                'is_active' => true,
             ]);
-            $user->load('patientProfile');
-        }
 
-        $token = JWTAuth::fromUser($user);
+            // Create patient profile if registering as patient
+            if ($user->isPatient()) {
+                \App\Models\Patient::create([
+                    'user_id'    => (string) $user->_id,
+                    'is_critical' => false,
+                ]);
+                $user->load('patientProfile');
+            }
 
-        $this->logActivity($user->id, 'register', 'user', $user->id, "User registered: {$user->email}");
+            $token = JWTAuth::fromUser($user);
 
-        return ['user' => $user, 'token' => $token];
+            $this->logActivity($user->id, 'register', 'user', $user->id, "User registered: {$user->email}");
+
+            return ['user' => $user, 'token' => $token];
+        });
     }
 
     /**

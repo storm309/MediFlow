@@ -203,12 +203,14 @@ class AiController extends Controller
         try {
             $averages = $this->metricService->getAverages($patientId, 'weekly');
             $patient  = ['name' => $request->get('patient_name', 'Patient')];
-            $alerts   = []; // Could be passed in request
-
-            $summary = $this->gemini->generateReportSummary($averages, $alerts, $patient);
-
-            return response()->json(['success' => true, 'data' => ['summary' => $summary]]);
-
+                // Fetch actual alerts for the patient
+                $alerts = Alert::where('patient_id', $patientId)
+                    ->whereBetween('created_at', [
+                        now()->startOfWeek(),
+                        now()->endOfWeek()
+                    ])
+                    ->get()
+                    ->toArray();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
