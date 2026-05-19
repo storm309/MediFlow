@@ -417,7 +417,7 @@ export default function AdminUsersManagement() {
                                         value={doctorForm.phone}
                                         onChange={(e) => setDoctorForm({...doctorForm, phone: e.target.value})}
                                         className="input-base w-full"
-                                        placeholder="+1 (555) 000-0000"
+                                        placeholder="+91 98765 43210"
                                     />
                                 </div>
                             </div>

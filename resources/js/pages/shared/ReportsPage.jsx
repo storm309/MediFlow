@@ -63,6 +63,7 @@ export default function ReportsPage() {
     const user     = useSelector(selectUser);
     const isDoctor = user?.role === 'doctor';
     const isPatient = user?.role === 'patient';
+    const isAdmin = user?.role === 'admin';
 
     const [showForm, setShowForm]       = useState(false);
     const [expandedId, setExpandedId]   = useState(null);
@@ -90,10 +91,12 @@ export default function ReportsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="page-title">{isDoctor ? 'Patient Reports' : 'My Health Reports'}</h1>
+                    <h1 className="page-title">{isDoctor ? 'Patient Reports' : isAdmin ? 'System Reports' : 'My Health Reports'}</h1>
                     <p className="page-subtitle">
-                        {isDoctor
+                        {isDoctor 
                             ? 'Review reports for all your patients and add clinical notes.'
+                            : isAdmin 
+                            ? 'View and manage health reports across the entire system.'
                             : 'Generate and download your personal health summaries.'}
                     </p>
                 </div>
@@ -146,7 +149,7 @@ export default function ReportsPage() {
                     </div>
                     <p className="font-bold text-slate-800 dark:text-white">No reports yet</p>
                     <p className="text-slate-500 text-sm mt-1">
-                        {isDoctor ? 'No patient reports available yet.' : 'Generate a report to view your health summary.'}
+                        {isDoctor ? 'No patient reports available yet.' : isAdmin ? 'No system reports available yet.' : 'Generate a report to view your health summary.'}
                     </p>
                 </div>
             ) : (

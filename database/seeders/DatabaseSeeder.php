@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             'age'       => 42,
             'gender'    => 'male',
             'blood_group' => 'O+',
-            'phone'     => '+1-555-0100',
+            'phone'     => '+91-98765-43210',
             'address'   => '123 Main St, Springfield',
             'medical_history'     => ['Hypertension', 'Type 2 Diabetes'],
             'allergies'           => ['Penicillin'],
