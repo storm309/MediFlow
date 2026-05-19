@@ -45,8 +45,6 @@ const navItems = {
     admin: [
         { to: '/admin',        label: 'Dashboard',    icon: 'dashboard' },
         { to: '/alerts',       label: 'Alerts',       icon: 'alert',    badge: 'alerts' },
-        { to: '/reports',      label: 'Reports',      icon: 'report' },
-        { to: '/appointments', label: 'Appointments', icon: 'calendar' },
         { to: '/profile',      label: 'Profile',      icon: 'profile' },
     ],
     doctor: [

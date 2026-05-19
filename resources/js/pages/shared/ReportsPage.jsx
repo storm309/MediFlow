@@ -93,9 +93,9 @@ export default function ReportsPage() {
                 <div>
                     <h1 className="page-title">{isDoctor ? 'Patient Reports' : isAdmin ? 'System Reports' : 'My Health Reports'}</h1>
                     <p className="page-subtitle">
-                        {isDoctor 
+                        {isDoctor
                             ? 'Review reports for all your patients and add clinical notes.'
-                            : isAdmin 
+                            : isAdmin
                             ? 'View and manage health reports across the entire system.'
                             : 'Generate and download your personal health summaries.'}
                     </p>
