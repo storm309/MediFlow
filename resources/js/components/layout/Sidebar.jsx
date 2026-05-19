@@ -44,7 +44,6 @@ const roleLabels = { admin: 'Admin', doctor: 'Doctor', patient: 'Patient' };
 const navItems = {
     admin: [
         { to: '/admin',        label: 'Dashboard',    icon: 'dashboard' },
-        { to: '/alerts',       label: 'Alerts',       icon: 'alert',    badge: 'alerts' },
         { to: '/profile',      label: 'Profile',      icon: 'profile' },
     ],
     doctor: [
