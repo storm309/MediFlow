@@ -125,9 +125,9 @@ export default function LandingPage() {
             <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-cyan-950">
                 {/* Background decoration */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-                    <div className="absolute top-1/2 -left-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 right-1/3 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl" />
+                    <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-2xl" />
+                    <div className="absolute top-1/2 -left-20 w-72 h-72 bg-cyan-500/5 rounded-full blur-2xl" />
+                    <div className="absolute bottom-0 right-1/3 w-64 h-64 bg-indigo-600/10 rounded-full blur-2xl" />
                     {/* Grid */}
                     <div className="absolute inset-0 opacity-[0.03]"
                         style={{ backgroundImage: 'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)', backgroundSize: '60px 60px' }}

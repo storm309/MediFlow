@@ -15,8 +15,8 @@ export default function AuthLayout() {
             <div className="hidden lg:flex lg:w-[52%] bg-gradient-to-br from-slate-900 via-blue-950 to-cyan-950 flex-col p-10 relative overflow-hidden">
                 {/* Background decorations */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/15 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-                    <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-400/10 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
+                    <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-400/5 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl" />
                     <div className="absolute inset-0 opacity-[0.03]"
                         style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.8) 1px,transparent 1px)', backgroundSize: '40px 40px' }}
                     />
