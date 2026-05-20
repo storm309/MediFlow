@@ -12,11 +12,17 @@ export default function AuthLayout() {
     return (
         <div className="min-h-screen flex">
             {/* Left panel — branding */}
-            <div className="hidden lg:flex lg:w-[52%] bg-gradient-to-br from-slate-900 via-blue-950 to-cyan-950 flex-col p-10 relative overflow-hidden">
-                {/* Background decorations */}
+            <div className="hidden lg:flex lg:w-[52%] flex-col p-10 relative overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, #070d1c 0%, #0c1630 40%, #0f1a40 70%, #070d1c 100%)' }}
+            >
+                {/* Animated gradient orbs */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
-                    <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-400/5 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl" />
+                    <div className="animate-orb absolute -top-32 -left-32 w-96 h-96 rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)' }} />
+                    <div className="animate-orb absolute bottom-0 -right-16 w-80 h-80 rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', animationDelay: '-4s' }} />
+                    <div className="animate-orb absolute top-1/2 left-1/3 w-64 h-64 rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%)', animationDelay: '-8s' }} />
                     <div className="absolute inset-0 opacity-[0.03]"
                         style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.8) 1px,transparent 1px)', backgroundSize: '40px 40px' }}
                     />
@@ -24,22 +30,22 @@ export default function AuthLayout() {
 
                 {/* Logo */}
                 <Link to="/" className="relative flex items-center gap-2.5 w-fit">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
                         <svg className="w-6 h-6 text-white animate-heartbeat" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                         </svg>
                     </div>
                     <div>
                         <p className="font-black text-xl text-white tracking-tight">MediFlow</p>
-                        <p className="text-xs text-blue-300">Patient Monitoring</p>
+                        <p className="text-xs text-indigo-300/70">Patient Monitoring</p>
                     </div>
                 </Link>
 
                 {/* Main copy */}
                 <div className="relative flex-1 flex flex-col justify-center">
                     <div className="mb-2">
-                        <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/15 border border-blue-400/25 text-blue-300 text-xs font-semibold rounded-full">
-                            <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                        <span className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-xs font-semibold rounded-full">
+                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full badge-pulse" />
                             Live WebSocket Monitoring
                         </span>
                     </div>
@@ -81,10 +87,10 @@ export default function AuthLayout() {
             </div>
 
             {/* Right panel — form */}
-            <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 px-6 py-12">
+            <div className="flex-1 flex flex-col items-center justify-center px-6 py-12" style={{ background: 'var(--page-bg)' }}>
                 {/* Mobile logo */}
                 <Link to="/" className="lg:hidden flex items-center gap-2 mb-8">
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center">
+                    <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-500/25">
                         <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                         </svg>
@@ -92,7 +98,7 @@ export default function AuthLayout() {
                     <span className="font-black text-xl text-slate-900 dark:text-white tracking-tight">MediFlow</span>
                 </Link>
 
-                <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 animate-fade-in-up">
+                <div className="w-full max-w-md bg-white dark:bg-[#111827] rounded-3xl shadow-2xl shadow-indigo-500/5 border border-indigo-100/80 dark:border-white/5 p-8 animate-fade-in-up">
                     <Outlet />
                 </div>
             </div>

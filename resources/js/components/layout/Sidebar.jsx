@@ -43,7 +43,8 @@ const Icons = {
     ),
 };
 
-const roleColors = { admin: 'bg-slate-600', doctor: 'bg-blue-600', patient: 'bg-emerald-600' };
+const roleColors = { admin: 'from-slate-500 to-slate-700', doctor: 'from-indigo-500 to-violet-600', patient: 'from-emerald-500 to-teal-600' };
+const roleBgColors = { admin: 'bg-slate-600', doctor: 'bg-indigo-600', patient: 'bg-emerald-600' };
 const roleLabels = { admin: 'Admin', doctor: 'Doctor', patient: 'Patient' };
 
 const navItems = {
@@ -73,7 +74,8 @@ export default function Sidebar({ open }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const items    = navItems[user?.role] ?? [];
-    const roleBadgeBg = roleColors[user?.role] ?? 'bg-blue-600';
+    const roleBadgeBg = roleBgColors[user?.role] ?? 'bg-indigo-600';
+    const roleGradient = roleColors[user?.role] ?? 'from-indigo-500 to-violet-600';
 
     const handleLogout = async () => {
         await dispatch(logoutUser());
@@ -83,27 +85,31 @@ export default function Sidebar({ open }) {
     return (
         <aside className={`${
             open ? 'w-64' : 'w-0 overflow-hidden'
-        } transition-all duration-300 shrink-0 flex flex-col`}
+        } transition-all duration-300 shrink-0 flex flex-col relative`}
             style={{ background: 'var(--sidebar-bg)' }}
         >
+            {/* Subtle gradient overlay at top */}
+            <div className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+                style={{ background: 'linear-gradient(180deg, rgba(99,102,241,0.07) 0%, transparent 100%)' }} />
+
             {/* Logo */}
-            <div className="px-5 py-5 border-b border-slate-700/60 flex items-center gap-3">
-                <div className="w-9 h-9 bg-linear-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+            <div className="relative px-5 py-5 border-b border-white/5 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0">
                     <svg className="w-5 h-5 text-white animate-heartbeat" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                     </svg>
                 </div>
                 <div className="min-w-0">
                     <p className="font-black text-white text-base leading-none tracking-tight">MediFlow</p>
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full text-white font-semibold mt-0.5 inline-block ${roleBadgeBg}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full text-white font-bold mt-1 inline-block bg-gradient-to-r ${roleGradient}`}>
                         {roleLabels[user?.role] ?? 'User'}
                     </span>
                 </div>
             </div>
 
             {/* Nav */}
-            <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-1">Navigation</p>
+            <nav className="relative flex-1 p-3 space-y-0.5 overflow-y-auto">
+                <p className="text-[10px] font-bold text-indigo-400/60 uppercase tracking-widest px-3 mb-2 mt-1">Navigation</p>
                 {items.map((item) => {
                     const badgeCount = item.badge === 'alerts' ? (stats?.unread ?? 0) : 0;
                     return (
@@ -118,7 +124,7 @@ export default function Sidebar({ open }) {
                             {Icons[item.icon]}
                             <span className="flex-1 text-sm">{item.label}</span>
                             {badgeCount > 0 && (
-                                <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-4.5 h-4.5 flex items-center justify-center px-1 badge-pulse">
+                                <span className="bg-rose-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 badge-pulse shadow-sm shadow-rose-500/50">
                                     {badgeCount > 9 ? '9+' : badgeCount}
                                 </span>
                             )}
@@ -128,19 +134,19 @@ export default function Sidebar({ open }) {
             </nav>
 
             {/* User footer */}
-            <div className="p-3 border-t border-slate-700/60">
+            <div className="relative p-3 border-t border-white/5">
                 <div className="flex items-center gap-3 px-2 py-2 mb-1">
-                    <div className={`w-9 h-9 ${roleBadgeBg} rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-md`}>
+                    <div className={`w-9 h-9 bg-gradient-to-br ${roleGradient} rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-md ring-2 ring-white/10`}>
                         {user?.name?.[0]?.toUpperCase() ?? '?'}
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate leading-tight">{user?.name}</p>
-                        <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                        <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                     </div>
                 </div>
                 <button
                     onClick={handleLogout}
-                    className="sidebar-item w-full text-left hover:bg-red-600/20 hover:text-red-400 mt-1"
+                    className="sidebar-item w-full text-left hover:bg-rose-500/15 hover:text-rose-400 mt-1"
                 >
                     {Icons.logout}
                     <span className="text-sm">Sign Out</span>
