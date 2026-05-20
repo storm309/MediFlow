@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import api from '../../services/api';
 
 const actionColors = {
@@ -23,6 +23,69 @@ const entityIcons = {
 
 const ACTIONS  = ['login', 'logout', 'create', 'update', 'delete', 'view', 'export', 'alert_resolved'];
 const ENTITIES = ['user', 'patient', 'health_metric', 'alert', 'report', 'appointment'];
+
+// Custom dropdown — avoids native <select> dark mode styling bugs
+function FilterSelect({ value, onChange, options, placeholder, width = 'w-44' }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selected = options.find(o => o.value === value);
+
+    return (
+        <div className={`relative ${width}`} ref={ref}>
+            <button
+                type="button"
+                onClick={() => setOpen(o => !o)}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+            >
+                <span className={value ? 'font-medium text-slate-900 dark:text-white' : 'text-slate-400'}>
+                    {selected ? selected.label : placeholder}
+                </span>
+                <svg className={`w-4 h-4 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            {open && (
+                <div className="absolute z-30 mt-1.5 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl overflow-hidden">
+                    {/* All / clear option */}
+                    <button
+                        type="button"
+                        onClick={() => { onChange(''); setOpen(false); }}
+                        className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                            !value
+                                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-semibold'
+                                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                        }`}
+                    >
+                        {placeholder}
+                    </button>
+                    <div className="h-px bg-slate-100 dark:bg-slate-700" />
+                    {options.map(opt => (
+                        <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => { onChange(opt.value); setOpen(false); }}
+                            className={`w-full text-left px-3 py-2 text-sm capitalize transition-colors ${
+                                value === opt.value
+                                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-semibold'
+                                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                            }`}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
 
 // Skeleton row for loading state
 function SkeletonRow() {
@@ -102,28 +165,22 @@ export default function AdminAuditLogs() {
                     </form>
 
                     {/* Action filter */}
-                    <select
+                    <FilterSelect
                         value={filters.action}
-                        onChange={(e) => handleFilterChange('action', e.target.value)}
-                        className="input text-sm w-40"
-                    >
-                        <option value="">All Actions</option>
-                        {ACTIONS.map(a => (
-                            <option key={a} value={a}>{a.replace(/_/g, ' ')}</option>
-                        ))}
-                    </select>
+                        onChange={(v) => handleFilterChange('action', v)}
+                        placeholder="All Actions"
+                        width="w-44"
+                        options={ACTIONS.map(a => ({ value: a, label: a.replace(/_/g, ' ') }))}
+                    />
 
                     {/* Entity filter */}
-                    <select
+                    <FilterSelect
                         value={filters.entity_type}
-                        onChange={(e) => handleFilterChange('entity_type', e.target.value)}
-                        className="input text-sm w-44"
-                    >
-                        <option value="">All Entities</option>
-                        {ENTITIES.map(e => (
-                            <option key={e} value={e}>{e.replace(/_/g, ' ')}</option>
-                        ))}
-                    </select>
+                        onChange={(v) => handleFilterChange('entity_type', v)}
+                        placeholder="All Entities"
+                        width="w-44"
+                        options={ENTITIES.map(e => ({ value: e, label: e.replace(/_/g, ' ') }))}
+                    />
 
                     {/* Clear */}
                     {(filters.action || filters.entity_type || filters.search) && (
