@@ -5,6 +5,7 @@ use App\Http\Controllers\AiController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HealthMetricController;
 use App\Http\Controllers\NotificationController;
@@ -34,6 +35,9 @@ Route::prefix('auth')->group(function () {
         Route::put('password',  [AuthController::class, 'updatePassword']);
     });
 });
+
+// ── Contact Admin (Public) ───────────────────────────────────────────────────
+Route::post('contact-admin', [ContactController::class, 'send'])->middleware('throttle:5,1');
 
 // ── Protected Routes ─────────────────────────────────────────────────────────
 Route::middleware('jwt.auth')->group(function () {

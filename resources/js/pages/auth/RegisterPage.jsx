@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/slices/authSlice';
 import toast from 'react-hot-toast';
+import ContactAdminModal from '../../components/ui/ContactAdminModal';
 
 const InputField = ({ label, name, type = 'text', placeholder, form, setForm }) => (
     <div>
@@ -23,6 +24,7 @@ export default function RegisterPage() {
     const navigate = useNavigate();
     const [form, setForm] = useState({ name: '', email: '', password: '', password_confirmation: '', role: 'patient' });
     const [loading, setLoading] = useState(false);
+    const [showContactModal, setShowContactModal] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -62,9 +64,34 @@ export default function RegisterPage() {
                             <strong>Patient Account</strong><br/>
                             Monitor your health with real-time vitals and AI insights.
                         </p>
-                        <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
-                            💡 <strong>Doctor?</strong> Contact admin to create your verified doctor account.
-                        </p>
+                        <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700 space-y-1.5">
+                            <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">
+                                💡 Doctor? Admin creates your account.
+                            </p>
+                            <div className="flex items-center gap-1.5 text-xs text-blue-700 dark:text-blue-300">
+                                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                <a href="mailto:shivamkumarp447@gmail.com" className="hover:underline font-medium">
+                                    shivamkumarp447@gmail.com
+                                </a>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-blue-700 dark:text-blue-300">
+                                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                <a href="tel:+918252980774" className="hover:underline font-medium">
+                                    +91 82529 80774
+                                </a>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowContactModal(true)}
+                                className="mt-1 w-full text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg py-2 transition-colors"
+                            >
+                                Send Request to Admin →
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -92,6 +119,8 @@ export default function RegisterPage() {
                 Already have an account?{' '}
                 <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700">Sign In</Link>
             </p>
+
+            {showContactModal && <ContactAdminModal onClose={() => setShowContactModal(false)} />}
         </>
     );
 }
