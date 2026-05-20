@@ -78,8 +78,11 @@ export default function AdminUsersManagement() {
 
     const handleUpdateRole = async () => {
         if (!selectedUser || !newRole) return;
+        // MongoDB models may serialize primary key as `id` or `_id`
+        const userId = selectedUser.id ?? selectedUser._id;
+        if (!userId) { toast.error('Cannot identify user — please refresh.'); return; }
         try {
-            const res = await api.put(`/admin/users/${selectedUser._id}`, { role: newRole });
+            await api.put(`/admin/users/${userId}`, { role: newRole });
             toast.success(`${selectedUser.name} role updated to ${newRole}`);
             setShowRoleModal(false);
             setSelectedUser(null);
@@ -140,7 +143,9 @@ export default function AdminUsersManagement() {
             });
             loadDoctors();
         } catch (err) {
-            toast.error(err.response?.data?.errors?.email?.[0] ?? err.response?.data?.message ?? 'Creation failed');
+            const errors = err.response?.data?.errors;
+            const firstError = errors ? Object.values(errors).flat()[0] : null;
+            toast.error(firstError ?? err.response?.data?.message ?? 'Creation failed');
         } finally {
             setCreatingDoctor(false);
         }
@@ -249,7 +254,7 @@ export default function AdminUsersManagement() {
                                                     Edit Role
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDeleteUser(u._id)}
+                                                    onClick={() => handleDeleteUser(u.id ?? u._id)}
                                                     className="text-red-600 hover:text-red-700 font-medium"
                                                 >
                                                     Delete
