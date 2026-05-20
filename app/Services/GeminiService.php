@@ -102,8 +102,14 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
 {
   "risk_score": 0-100,
   "severity": "normal|warning|critical|emergency",
+  "trend_prediction": "stable|moderate_risk|critical_trend",
   "risks": [
-    { "type": "risk_name", "level": "low|medium|high|critical", "detail": "short explanation" }
+    { "type": "risk_name", "level": "low|medium|high|critical", "detail": "short explanation of why this risk was flagged" }
+  ],
+  "explanation_factors": [
+    "Factor 1 that contributed to this risk score (e.g. Systolic BP 158 mmHg exceeds normal range of 120 mmHg)",
+    "Factor 2...",
+    "Factor 3..."
   ],
   "summary": "2-3 sentence clinical summary for the doctor",
   "recommendations": ["recommendation 1", "recommendation 2", "recommendation 3"]

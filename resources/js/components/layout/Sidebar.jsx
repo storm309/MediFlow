@@ -36,6 +36,11 @@ const Icons = {
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
         </svg>
     ),
+    auditlogs: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+    ),
 };
 
 const roleColors = { admin: 'bg-slate-600', doctor: 'bg-blue-600', patient: 'bg-emerald-600' };
@@ -43,8 +48,9 @@ const roleLabels = { admin: 'Admin', doctor: 'Doctor', patient: 'Patient' };
 
 const navItems = {
     admin: [
-        { to: '/admin',        label: 'Dashboard',    icon: 'dashboard' },
-        { to: '/profile',      label: 'Profile',      icon: 'profile' },
+        { to: '/admin',             label: 'Dashboard',  icon: 'dashboard' },
+        { to: '/admin/audit-logs',  label: 'Audit Logs', icon: 'auditlogs' },
+        { to: '/profile',           label: 'Profile',    icon: 'profile' },
     ],
     doctor: [
         { to: '/doctor',       label: 'Dashboard',    icon: 'dashboard' },

@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Route;
 
 // ── Authentication (Public) ──────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
-    Route::post('register',         [AuthController::class, 'register']);
-    Route::post('login',            [AuthController::class, 'login']);
-    Route::post('forgot-password',  [AuthController::class, 'forgotPassword']);
-    Route::post('reset-password',   [AuthController::class, 'resetPassword']);
+    Route::post('register',         [AuthController::class, 'register'])->middleware('throttle:10,1');
+    Route::post('login',            [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('forgot-password',  [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+    Route::post('reset-password',   [AuthController::class, 'resetPassword'])->middleware('throttle:5,1');
 
     // Protected
     Route::middleware('jwt.auth')->group(function () {
@@ -88,9 +88,9 @@ Route::middleware('jwt.auth')->group(function () {
     // ── Reports ──────────────────────────────────────────────────────────────
     Route::prefix('reports')->group(function () {
         Route::get('/',               [ReportController::class, 'index']);
-        Route::post('generate',       [ReportController::class, 'generate'])->middleware('role:admin,doctor');
+        Route::post('generate',       [ReportController::class, 'generate'])->middleware('role:admin,doctor', 'throttle:15,1');
         Route::get('{id}',            [ReportController::class, 'show']);
-        Route::get('{id}/pdf',        [ReportController::class, 'downloadPdf']);
+        Route::get('{id}/pdf',        [ReportController::class, 'downloadPdf'])->middleware('throttle:20,1');
         Route::patch('{id}/notes',    [ReportController::class, 'addNotes'])->middleware('role:admin,doctor');
     });
 
@@ -112,10 +112,10 @@ Route::middleware('jwt.auth')->group(function () {
 
     // ── AI Features ───────────────────────────────────────────────────────────
     Route::prefix('ai')->group(function () {
-        Route::post('risk/{patientId}',          [AiController::class, 'analyseRisk']);
+        Route::post('risk/{patientId}',          [AiController::class, 'analyseRisk'])->middleware('throttle:30,1');
         Route::get('risk/{patientId}/history',   [AiController::class, 'riskHistory']);
-        Route::post('report-summary/{patientId}',[AiController::class, 'reportSummary'])->middleware('role:admin,doctor');
-        Route::post('chat',                      [AiController::class, 'chat']);
+        Route::post('report-summary/{patientId}',[AiController::class, 'reportSummary'])->middleware('role:admin,doctor', 'throttle:20,1');
+        Route::post('chat',                      [AiController::class, 'chat'])->middleware('throttle:30,1');
         Route::get('chat/history',               [AiController::class, 'chatHistory']);
         Route::delete('chat/history',            [AiController::class, 'clearChat']);
     });

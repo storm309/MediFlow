@@ -95,12 +95,58 @@ class HealthMetricService
 
     private function updateCriticalStatus(HealthMetric $metric): void
     {
-        $isCritical = ($metric->heart_rate ?? 0) > 110
+        // Emergency: immediately life-threatening thresholds
+        $isEmergency = ($metric->spo2 !== null && $metric->spo2 < 85)
+            || ($metric->heart_rate !== null && $metric->heart_rate > 130);
+
+        $isCritical = $isEmergency
+            || ($metric->heart_rate ?? 0) > 110
             || ($metric->spo2 ?? 100) < 90
             || ($metric->temperature ?? 0) > 103;
 
         Patient::where('_id', $metric->patient_id)
-            ->update(['is_critical' => $isCritical, 'last_checkup' => now()]);
+            ->update(['is_critical' => $isCritical, 'is_emergency' => $isEmergency, 'last_checkup' => now()]);
+
+        // Send emergency notifications to doctor and admin when newly critical
+        if ($isEmergency) {
+            $patient = Patient::with('user:_id,name')->find($metric->patient_id);
+            if (!$patient) return;
+
+            $patientName = $patient->user?->name ?? 'Unknown Patient';
+            $detail = [];
+            if ($metric->spo2 !== null && $metric->spo2 < 85) {
+                $detail[] = "SpO2 critically low: {$metric->spo2}%";
+            }
+            if ($metric->heart_rate !== null && $metric->heart_rate > 130) {
+                $detail[] = "Heart rate dangerously high: {$metric->heart_rate} bpm";
+            }
+            $detailText = implode(', ', $detail);
+
+            // Notify assigned doctor
+            if ($patient->doctor_id) {
+                \App\Models\Notification::create([
+                    'user_id'  => (string) $patient->doctor_id,
+                    'title'    => '🚨 EMERGENCY — Immediate Attention Required',
+                    'message'  => "Patient {$patientName}: {$detailText}. Please respond immediately.",
+                    'type'     => 'alert',
+                    'priority' => 'emergency',
+                    'is_read'  => false,
+                ]);
+            }
+
+            // Notify all admins
+            $admins = \App\Models\User::where('role', 'admin')->pluck('_id');
+            foreach ($admins as $adminId) {
+                \App\Models\Notification::create([
+                    'user_id'  => (string) $adminId,
+                    'title'    => '🚨 EMERGENCY — ' . $patientName,
+                    'message'  => $detailText . '. Doctor has been notified.',
+                    'type'     => 'alert',
+                    'priority' => 'emergency',
+                    'is_read'  => false,
+                ]);
+            }
+        }
     }
 
     private function getPeriodRange(string $period): array

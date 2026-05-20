@@ -9,6 +9,7 @@ import MetricCard from '../../components/ui/MetricCard';
 import LiveChart from '../../components/ui/LiveChart';
 import AlertBadge from '../../components/ui/AlertBadge';
 import AiRiskCard from '../../components/ui/AiRiskCard';
+import EmergencyBanner from '../../components/ui/EmergencyBanner';
 import RequestDoctorModal from '../../components/modals/RequestDoctorModal';
 import { selectUser } from '../../redux/slices/authSlice';
 import { format, parseISO, isFuture } from 'date-fns';
@@ -101,6 +102,9 @@ export default function PatientDashboard() {
 
     return (
         <div className="space-y-8 p-6 max-w-7xl">
+            {/* Emergency Banner — shown only when SpO2 < 85 or HR > 130 */}
+            <EmergencyBanner latest={latest} />
+
             {/* Doctor Assignment Alert */}
             {!user?.patient_profile?.doctor_id && (
                 <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-start gap-4">

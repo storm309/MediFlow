@@ -3,7 +3,33 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectNotifications, fetchNotifications, markNotificationRead, markAllRead } from '../../redux/slices/notificationSlice';
 import toast from 'react-hot-toast';
 
-const notificationColors = {
+// Priority-based color system — overrides type colors for emergency/warning
+const priorityConfig = {
+    emergency: {
+        border:  'border-l-red-600',
+        bg:      'bg-red-50 dark:bg-red-900/20',
+        badge:   'bg-red-600 text-white',
+        label:   '🚨 EMERGENCY',
+        ring:    'ring-2 ring-red-400 dark:ring-red-500/50',
+    },
+    warning: {
+        border:  'border-l-amber-500',
+        bg:      'bg-amber-50 dark:bg-amber-900/20',
+        badge:   'bg-amber-500 text-white',
+        label:   '⚠️ Warning',
+        ring:    '',
+    },
+    info: {
+        border:  'border-l-blue-500',
+        bg:      'bg-blue-50 dark:bg-blue-900/10',
+        badge:   null,
+        label:   null,
+        ring:    '',
+    },
+};
+
+// Fallback type-based colors (used when no priority set)
+const typeColors = {
     alert:       'border-l-red-500 bg-red-50 dark:bg-red-900/10',
     report:      'border-l-blue-500 bg-blue-50 dark:bg-blue-900/10',
     appointment: 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-900/10',
@@ -11,7 +37,7 @@ const notificationColors = {
     info:        'border-l-cyan-500 bg-cyan-50 dark:bg-cyan-900/10',
 };
 
-const notificationIcons = {
+const typeIcons = {
     alert:       '⚠️',
     report:      '📄',
     appointment: '📅',
@@ -72,31 +98,38 @@ export default function NotificationsPage() {
 
             <div className="space-y-3">
                 {notifications.map((notification) => {
-                    const bgClass = notificationColors[notification.type] || notificationColors.info;
-                    const icon = notificationIcons[notification.type] || '📌';
+                    const priority = notification.priority;
+                    const pConfig  = priorityConfig[priority];
+
+                    // Use priority-based styling when priority is set, else fall back to type
+                    const borderBg = pConfig
+                        ? `${pConfig.border} ${pConfig.bg}`
+                        : (typeColors[notification.type] || typeColors.info);
+                    const ringClass = pConfig?.ring || (!notification.is_read ? 'ring-2 ring-blue-300 dark:ring-blue-500/30' : '');
+                    const icon = typeIcons[notification.type] || '📌';
 
                     return (
                         <div
                             key={notification._id}
-                            className={`card border-l-4 p-4 cursor-pointer hover:shadow-md transition-all ${bgClass} ${
-                                !notification.is_read ? 'ring-2 ring-blue-300 dark:ring-blue-500/30' : ''
-                            }`}
+                            className={`card border-l-4 p-4 cursor-pointer hover:shadow-md transition-all ${borderBg} ${ringClass}`}
                             onClick={() => {
-                                if (!notification.is_read) {
-                                    handleMarkRead(notification._id);
-                                }
-                                if (notification.action_url) {
-                                    window.location.href = notification.action_url;
-                                }
+                                if (!notification.is_read) handleMarkRead(notification._id);
+                                if (notification.action_url) window.location.href = notification.action_url;
                             }}
                         >
                             <div className="flex items-start gap-4">
                                 <span className="text-2xl flex-shrink-0">{icon}</span>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-1">
+                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                                         <h3 className="font-semibold text-slate-900 dark:text-white truncate">
                                             {notification.title}
                                         </h3>
+                                        {/* Priority badge */}
+                                        {pConfig?.badge && (
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${pConfig.badge}`}>
+                                                {pConfig.label}
+                                            </span>
+                                        )}
                                         {!notification.is_read && (
                                             <span className="inline-flex w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></span>
                                         )}
@@ -110,10 +143,7 @@ export default function NotificationsPage() {
                                 </div>
                                 {!notification.is_read && (
                                     <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleMarkRead(notification._id);
-                                        }}
+                                        onClick={(e) => { e.stopPropagation(); handleMarkRead(notification._id); }}
                                         className="px-2.5 py-1 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors flex-shrink-0"
                                     >
                                         Mark Read
@@ -127,3 +157,4 @@ export default function NotificationsPage() {
         </div>
     );
 }
+

@@ -14,6 +14,7 @@ class Notification extends Model
         'title',
         'message',
         'type',         // alert | report | appointment | system | info
+        'priority',     // emergency | warning | info (default)
         'data',         // JSON extra payload
         'is_read',
         'read_at',
