@@ -21,6 +21,7 @@ class ActivityLog extends Model
     ];
 
     protected $casts = [
+        '_id'      => 'string',
         'metadata' => 'array',
     ];
 

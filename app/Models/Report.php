@@ -32,6 +32,7 @@ class Report extends Model
     ];
 
     protected $casts = [
+        '_id'                             => 'string',
         'period_start'                    => 'datetime',
         'period_end'                      => 'datetime',
         'avg_heart_rate'                  => 'float',

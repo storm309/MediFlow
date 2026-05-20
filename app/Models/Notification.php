@@ -21,6 +21,7 @@ class Notification extends Model
     ];
 
     protected $casts = [
+        '_id'     => 'string',
         'data'    => 'array',
         'is_read' => 'boolean',
         'read_at' => 'datetime',

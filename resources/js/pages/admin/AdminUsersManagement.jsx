@@ -279,9 +279,9 @@ export default function AdminUsersManagement() {
                                     className="input-base w-full"
                                 >
                                     <option value="">Choose patient...</option>
-                                    {patients.map(p => (
+                                    {patients.filter(p => p.user?.name).map(p => (
                                         <option key={p._id} value={p._id}>
-                                            {p.user?.name} ({p.user?.email})
+                                            {p.user.name} ({p.user.email})
                                         </option>
                                     ))}
                                 </select>

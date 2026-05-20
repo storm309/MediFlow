@@ -10,9 +10,9 @@ Broadcast::channel('alerts', function ($user) {
 
 // Private channel per patient for health metrics
 Broadcast::channel('patient.{patientId}', function (User $user, string $patientId) {
-    return $user->id === $patientId
-        || $user->role === 'admin'
-        || ($user->role === 'doctor' && \App\Models\Patient::where('_id', $patientId)->where('doctor_id', $user->id)->exists());
+    return $user->role === 'admin'
+        || ($user->role === 'patient' && \App\Models\Patient::where('_id', $patientId)->where('user_id', (string) $user->_id)->exists())
+        || ($user->role === 'doctor' && \App\Models\Patient::where('_id', $patientId)->where('doctor_id', (string) $user->_id)->exists());
 });
 
 // Doctor-specific channel

@@ -26,6 +26,7 @@ class User extends Model implements AuthenticatableContract, JWTSubject
     protected $hidden = ['password', 'remember_token', 'password_reset_token'];
 
     protected $casts = [
+        '_id'                       => 'string',
         'email_verified_at'         => 'datetime',
         'last_login'                => 'datetime',
         'password_reset_expires_at' => 'datetime',

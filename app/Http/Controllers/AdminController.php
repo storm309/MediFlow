@@ -264,7 +264,11 @@ class AdminController extends Controller
      */
     public function getDoctors(): JsonResponse
     {
-        $doctors = User::where('role', 'doctor')->select('_id', 'name', 'email', 'phone', 'is_active')->get();
+        $doctors = User::where('role', 'doctor')
+            ->where('is_active', true)
+            ->where('verification_status', 'verified')
+            ->select('_id', 'name', 'email', 'phone', 'specialization')
+            ->get();
         return response()->json(['success' => true, 'data' => $doctors]);
     }
 

@@ -21,6 +21,7 @@ class UploadedFile extends Model
     ];
 
     protected $casts = [
+        '_id'        => 'string',
         'size_bytes' => 'integer',
     ];
 

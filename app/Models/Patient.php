@@ -26,6 +26,7 @@ class Patient extends Model
     ];
 
     protected $casts = [
+        '_id'                 => 'string',
         'age'                 => 'integer',
         'is_critical'         => 'boolean',
         'last_checkup'        => 'datetime',

@@ -25,6 +25,7 @@ class HealthMetric extends Model
     ];
 
     protected $casts = [
+        '_id'                        => 'string',
         'heart_rate'                 => 'float',
         'spo2'                       => 'float',
         'blood_pressure_systolic'    => 'float',

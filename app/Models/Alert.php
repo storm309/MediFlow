@@ -23,6 +23,7 @@ class Alert extends Model
     ];
 
     protected $casts = [
+        '_id'         => 'string',
         'resolved_at' => 'datetime',
     ];
 

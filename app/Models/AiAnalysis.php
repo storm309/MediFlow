@@ -19,6 +19,7 @@ class AiAnalysis extends Model
     ];
 
     protected $casts = [
+        '_id'        => 'string',
         'input'      => 'array',
         'result'     => 'array',
         'risk_score' => 'integer',

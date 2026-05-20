@@ -62,7 +62,7 @@ export default function AdminDashboard() {
             {/* Quick actions */}
             <div>
                 <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {quickActions.map((a) => (
                         <Link key={a.to} to={a.to}
                             className="card p-6 group hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
