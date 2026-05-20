@@ -115,8 +115,20 @@ class AuthService
             'password_reset_expires_at' => now()->addHour(),
         ]);
 
-        // In production, dispatch a mail job instead:
-        // Mail::to($user)->send(new PasswordResetMail($token));
+        $resetUrl = rtrim(config('app.frontend_url', config('app.url')), '/') . '/reset-password?token=' . $token . '&email=' . urlencode($email);
+
+        Mail::raw(
+            "Hello {$user->name},\n\n"
+            . "You requested a password reset for your MediFlow account.\n\n"
+            . "Click the link below to reset your password (valid for 1 hour):\n\n"
+            . "{$resetUrl}\n\n"
+            . "If you did not request this, you can safely ignore this email.\n\n"
+            . "— MediFlow Team",
+            function ($message) use ($user) {
+                $message->to($user->email, $user->name)
+                        ->subject('MediFlow — Reset Your Password');
+            }
+        );
     }
 
     /**

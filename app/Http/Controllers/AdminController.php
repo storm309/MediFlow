@@ -143,8 +143,15 @@ class AdminController extends Controller
      */
     public function activityLogs(Request $request): JsonResponse
     {
-        $perPage = min((int) $request->get('per_page', 20), 100);
-        $logs    = ActivityLog::with('user:_id,name,email,role')
+        $perPage    = min((int) $request->get('per_page', 20), 100);
+        $action     = $request->get('action');
+        $entityType = $request->get('entity_type');
+        $search     = $request->get('search');
+
+        $logs = ActivityLog::with('user:_id,name,email,role')
+            ->when($action,     fn ($q) => $q->where('action', $action))
+            ->when($entityType, fn ($q) => $q->where('entity_type', $entityType))
+            ->when($search,     fn ($q) => $q->where('description', 'like', "%{$search}%"))
             ->latest()
             ->paginate($perPage);
 

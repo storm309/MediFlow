@@ -22,6 +22,7 @@ class Patient extends Model
         'allergies',
         'current_medications',
         'is_critical',
+        'is_emergency',
         'last_checkup',
     ];
 
@@ -29,6 +30,7 @@ class Patient extends Model
         '_id'                 => 'string',
         'age'                 => 'integer',
         'is_critical'         => 'boolean',
+        'is_emergency'        => 'boolean',
         'last_checkup'        => 'datetime',
         'medical_history'     => 'array',
         'allergies'           => 'array',

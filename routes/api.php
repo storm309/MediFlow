@@ -109,7 +109,7 @@ Route::middleware('jwt.auth')->group(function () {
     // ── Appointments ──────────────────────────────────────────────────────────
     Route::prefix('appointments')->group(function () {
         Route::get('/',       [AppointmentController::class, 'index']);
-        Route::post('/',      [AppointmentController::class, 'store'])->middleware('role:admin,doctor');
+        Route::post('/',      [AppointmentController::class, 'store']);
         Route::patch('{id}',  [AppointmentController::class, 'update']);
         Route::delete('{id}', [AppointmentController::class, 'destroy'])->middleware('role:admin,doctor');
     });

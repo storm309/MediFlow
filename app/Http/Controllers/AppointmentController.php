@@ -61,6 +61,16 @@ class AppointmentController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        $user = $request->user();
+
+        // Patients can only create appointments for themselves
+        if ($user->isPatient()) {
+            $patient = $user->patientProfile;
+            if (!$patient || (string) $patient->_id !== $request->patient_id) {
+                return response()->json(['success' => false, 'message' => 'You can only book appointments for yourself.'], 403);
+            }
+        }
+
         $appointment = Appointment::create($validator->validated());
 
         // Notify patient and doctor

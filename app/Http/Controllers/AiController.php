@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AiAnalysis;
+use App\Models\Alert;
 use App\Models\ChatHistory;
 use App\Services\GeminiService;
 use App\Services\HealthMetricService;
@@ -203,18 +204,23 @@ class AiController extends Controller
         try {
             $averages = $this->metricService->getAverages($patientId, 'weekly');
             $patient  = ['name' => $request->get('patient_name', 'Patient')];
-                // Fetch actual alerts for the patient
-                $alerts = Alert::where('patient_id', $patientId)
-                    ->whereBetween('created_at', [
-                        now()->startOfWeek(),
-                        now()->endOfWeek()
-                    ])
-                    ->get()
-                    ->toArray();
+
+            $alerts = Alert::where('patient_id', $patientId)
+                ->whereBetween('created_at', [
+                    now()->startOfWeek(),
+                    now()->endOfWeek(),
+                ])
+                ->get()
+                ->toArray();
+
+            $summary = $this->gemini->generateReportSummary($averages, $alerts, $patient);
+
+            return response()->json(['success' => true, 'data' => ['summary' => $summary]]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Could not generate AI summary.',
+                'error'   => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
     }
