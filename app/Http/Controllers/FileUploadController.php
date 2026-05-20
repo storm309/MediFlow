@@ -79,8 +79,18 @@ class FileUploadController extends Controller
     /**
      * GET /uploads/{patientId} — List uploads for a patient.
      */
-    public function index(string $patientId): JsonResponse
+    public function index(Request $request, string $patientId): JsonResponse
     {
+        $user = $request->user();
+
+        // Patients can only list their own files
+        if ($user->isPatient()) {
+            $patient = $user->patientProfile;
+            if (!$patient || (string) $patient->_id !== $patientId) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+        }
+
         $files = UploadedFile::where('patient_id', $patientId)
             ->orderBy('created_at', 'desc')
             ->get()

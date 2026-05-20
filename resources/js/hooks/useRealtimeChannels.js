@@ -49,7 +49,7 @@ export function useAlertsChannel() {
         channel.listen('.alert.created', (data) => {
             dispatch(addLiveAlert(data));
             dispatch(addLiveNotification({
-                _id:     data.id,
+                _id:     data._id ?? data.id,
                 title:   `⚠️ ${data.severity} Alert`,
                 message: data.message,
                 type:    'alert',

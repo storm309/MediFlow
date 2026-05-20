@@ -60,7 +60,7 @@ const metricsSlice = createSlice({
             .addCase(fetchMetrics.pending,   (s) => { s.loading = true; })
             .addCase(fetchMetrics.fulfilled,  (s, a) => {
                 s.loading  = false;
-                s.history  = a.payload.data ?? a.payload;
+                s.history  = a.payload?.data ?? a.payload ?? [];
             })
             .addCase(fetchMetrics.rejected,   (s, a) => { s.loading = false; s.error = a.payload; })
             .addCase(fetchRecentMetrics.fulfilled, (s, a) => {

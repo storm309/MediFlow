@@ -93,7 +93,7 @@ const authSlice = createSlice({
             .addCase(fetchMe.fulfilled,  (s, a) => { s.loading = false; s.user = a.payload; s.initialized = true; })
             .addCase(fetchMe.rejected,   (s) => { s.loading = false; s.user = null; s.token = null; s.initialized = true; localStorage.removeItem('mediflow_token'); })
         // Logout
-            .addCase(logoutUser.fulfilled, (s) => { s.user = null; s.token = null; });
+            .addCase(logoutUser.fulfilled, (s) => { s.user = null; s.token = null; s.error = null; });
     },
 });
 

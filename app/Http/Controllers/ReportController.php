@@ -102,6 +102,11 @@ class ReportController extends Controller
      */
     public function addNotes(Request $request, string $id): JsonResponse
     {
+        // Only doctors and admins can add clinical notes
+        if ($request->user()->isPatient()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'doctor_notes' => 'required|string|max:5000',
             'status'       => 'sometimes|in:reviewed,finalized',

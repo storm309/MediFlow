@@ -93,6 +93,20 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::findOrFail($id);
+        $user = $request->user();
+
+        // Doctors can only update their own appointments
+        if ($user->isDoctor() && (string) $appointment->doctor_id !== (string) $user->_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+        // Patients can only cancel their own appointments
+        if ($user->isPatient()) {
+            $patient = $user->patientProfile;
+            if (!$patient || (string) $appointment->patient_id !== (string) $patient->_id) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+        }
+
         $data = $validator->validated();
 
         if (($data['status'] ?? '') === 'cancelled') {
@@ -111,32 +125,52 @@ class AppointmentController extends Controller
     /**
      * DELETE /appointments/{id} — Cancel/delete appointment.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        Appointment::findOrFail($id)->delete();
+        $appointment = Appointment::findOrFail($id);
+        $user = $request->user();
+
+        // Doctors can only delete their own appointments
+        if ($user->isDoctor() && (string) $appointment->doctor_id !== (string) $user->_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+        // Patients can only delete their own appointments
+        if ($user->isPatient()) {
+            $patient = $user->patientProfile;
+            if (!$patient || (string) $appointment->patient_id !== (string) $patient->_id) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+        }
+
+        $appointment->delete();
         return response()->json(['success' => true, 'message' => 'Appointment deleted.']);
     }
 
     private function sendNotifications(Appointment $appointment): void
     {
-        // Notify patient
-        Notification::create([
-            'user_id' => $appointment->patient->user_id ?? null,
-            'title'   => 'Appointment Scheduled',
-            'message' => "Your appointment has been scheduled for {$appointment->scheduled_at->format('M d, Y H:i')}.",
-            'type'    => 'appointment',
-            'data'    => ['appointment_id' => (string) $appointment->_id],
-            'is_read' => false,
-        ]);
+        // Notify patient — skip if patient or user_id is missing
+        $patientUserId = $appointment->patient?->user_id ?? null;
+        if ($patientUserId) {
+            Notification::create([
+                'user_id' => $patientUserId,
+                'title'   => 'Appointment Scheduled',
+                'message' => "Your appointment has been scheduled for {$appointment->scheduled_at->format('M d, Y H:i')}.",
+                'type'    => 'appointment',
+                'data'    => ['appointment_id' => (string) $appointment->_id],
+                'is_read' => false,
+            ]);
+        }
 
         // Notify doctor
-        Notification::create([
-            'user_id' => $appointment->doctor_id,
-            'title'   => 'New Appointment',
-            'message' => "New appointment scheduled for {$appointment->scheduled_at->format('M d, Y H:i')}.",
-            'type'    => 'appointment',
-            'data'    => ['appointment_id' => (string) $appointment->_id],
-            'is_read' => false,
-        ]);
+        if ($appointment->doctor_id) {
+            Notification::create([
+                'user_id' => $appointment->doctor_id,
+                'title'   => 'New Appointment',
+                'message' => "New appointment scheduled for {$appointment->scheduled_at->format('M d, Y H:i')}.",
+                'type'    => 'appointment',
+                'data'    => ['appointment_id' => (string) $appointment->_id],
+                'is_read' => false,
+            ]);
+        }
     }
 }
