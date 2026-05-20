@@ -97,8 +97,8 @@ export default function AdminUsersManagement() {
         if (!selectedPatient || !selectedDoctor) return;
         try {
             await api.post('/admin/assign-doctor', {
-                patient_id: selectedPatient._id,
-                doctor_id: selectedDoctor._id,
+                patient_id: selectedPatient._id ?? selectedPatient.id,
+                doctor_id: selectedDoctor._id ?? selectedDoctor.id,
             });
             toast.success(`Doctor assigned to patient successfully!`);
             setShowAssignModal(false);
@@ -279,13 +279,13 @@ export default function AdminUsersManagement() {
                             <div>
                                 <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Select Patient</label>
                                 <select
-                                    value={selectedPatient?._id ?? ''}
-                                    onChange={(e) => setSelectedPatient(patients.find(p => p._id === e.target.value))}
+                                    value={selectedPatient ? (selectedPatient._id ?? selectedPatient.id ?? '') : ''}
+                                    onChange={(e) => setSelectedPatient(patients.find(p => (p._id ?? p.id) === e.target.value))}
                                     className="input-base w-full"
                                 >
                                     <option value="">Choose patient...</option>
                                     {patients.filter(p => p.user?.name).map(p => (
-                                        <option key={p._id} value={p._id}>
+                                        <option key={p._id ?? p.id} value={p._id ?? p.id}>
                                             {p.user.name} ({p.user.email})
                                         </option>
                                     ))}
@@ -295,13 +295,13 @@ export default function AdminUsersManagement() {
                             <div>
                                 <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Select Doctor</label>
                                 <select
-                                    value={selectedDoctor?._id ?? ''}
-                                    onChange={(e) => setSelectedDoctor(doctors.find(d => d._id === e.target.value))}
+                                    value={selectedDoctor ? (selectedDoctor._id ?? selectedDoctor.id ?? '') : ''}
+                                    onChange={(e) => setSelectedDoctor(doctors.find(d => (d._id ?? d.id) === e.target.value))}
                                     className="input-base w-full"
                                 >
                                     <option value="">Choose doctor...</option>
                                     {doctors.map(d => (
-                                        <option key={d._id} value={d._id}>
+                                        <option key={d._id ?? d.id} value={d._id ?? d.id}>
                                             Dr. {d.name} ({d.email})
                                         </option>
                                     ))}
