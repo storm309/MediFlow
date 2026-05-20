@@ -87,22 +87,41 @@ class AlertController extends Controller
      */
     public function stats(Request $request): JsonResponse
     {
-        $query = Alert::query();
+        // Build base match filter
+        $matchFilter = (object) [];
 
         if ($request->user()->isDoctor()) {
             $patientIds = $this->patientRepo
                 ->findByDoctorId((string) $request->user()->_id)
                 ->pluck('_id')
-                ->map(fn ($id) => (string) $id);
-            $query->whereIn('patient_id', $patientIds);
+                ->map(fn ($id) => (string) $id)
+                ->values()
+                ->toArray();
+            $matchFilter = ['patient_id' => ['$in' => $patientIds]];
         }
 
+        // Single aggregation with $facet instead of 5 separate queries
+        $todayStart = new \MongoDB\BSON\UTCDateTime(now()->startOfDay()->getTimestamp() * 1000);
+        $pipeline = [
+            ['$match' => $matchFilter],
+            ['$facet' => [
+                'total'    => [['$count' => 'count']],
+                'unread'   => [['$match' => ['status' => 'unread']], ['$count' => 'count']],
+                'critical' => [['$match' => ['severity' => ['$in' => ['critical', 'emergency']]]], ['$count' => 'count']],
+                'today'    => [['$match' => ['created_at' => ['$gte' => $todayStart]]], ['$count' => 'count']],
+                'resolved' => [['$match' => ['status' => 'resolved']], ['$count' => 'count']],
+            ]],
+        ];
+
+        $cursor = Alert::raw(fn ($col) => $col->aggregate($pipeline));
+        $row    = iterator_to_array($cursor)[0] ?? [];
+
         $stats = [
-            'total'         => (clone $query)->count(),
-            'unread'        => (clone $query)->where('status', 'unread')->count(),
-            'critical'      => (clone $query)->whereIn('severity', ['critical', 'emergency'])->count(),
-            'today'         => (clone $query)->whereDate('created_at', today())->count(),
-            'resolved'      => (clone $query)->where('status', 'resolved')->count(),
+            'total'    => $row['total'][0]['count']    ?? 0,
+            'unread'   => $row['unread'][0]['count']   ?? 0,
+            'critical' => $row['critical'][0]['count'] ?? 0,
+            'today'    => $row['today'][0]['count']    ?? 0,
+            'resolved' => $row['resolved'][0]['count'] ?? 0,
         ];
 
         return response()->json(['success' => true, 'data' => $stats]);

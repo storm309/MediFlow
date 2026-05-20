@@ -22,9 +22,32 @@ class AdminController extends Controller
      */
     public function dashboard(): JsonResponse
     {
-        $totalPatients = User::where('role', 'patient')->count();
-        $totalDoctors = User::where('role', 'doctor')->count();
-        $totalAdmins = User::where('role', 'admin')->count();
+        // Aggregate user counts by role in one query
+        $userCursor = User::raw(fn ($col) => $col->aggregate([
+            ['$group' => ['_id' => '$role', 'count' => ['$sum' => 1]]],
+        ]));
+        $userCounts  = collect(iterator_to_array($userCursor))->pluck('count', '_id');
+        $totalPatients = (int) ($userCounts['patient'] ?? 0);
+        $totalDoctors  = (int) ($userCounts['doctor']  ?? 0);
+        $totalAdmins   = (int) ($userCounts['admin']   ?? 0);
+
+        // Aggregate alert stats in one query
+        $todayStart  = new \MongoDB\BSON\UTCDateTime(now()->startOfDay()->getTimestamp() * 1000);
+        $todayStartU = new \MongoDB\BSON\UTCDateTime(now()->startOfDay()->getTimestamp() * 1000);
+        $alertCursor = Alert::raw(fn ($col) => $col->aggregate([
+            ['$facet' => [
+                'total'    => [['$count' => 'count']],
+                'unread'   => [['$match' => ['status' => 'unread']], ['$count' => 'count']],
+                'critical' => [['$match' => ['severity' => ['$in' => ['critical', 'emergency']]]], ['$count' => 'count']],
+                'today'    => [['$match' => ['created_at' => ['$gte' => $todayStart]]], ['$count' => 'count']],
+            ]],
+        ]));
+        $alertRow = iterator_to_array($alertCursor)[0] ?? [];
+
+        // Remaining stats (smaller collections, fast)
+        $criticalPatients  = Patient::where('is_critical', true)->count();
+        $appointmentsToday = Appointment::whereDate('scheduled_at', today())->count();
+        $newUsersToday     = User::whereDate('created_at', today())->count();
 
         return response()->json([
             'success' => true,
@@ -33,13 +56,13 @@ class AdminController extends Controller
                 'total_patients'     => $totalPatients,
                 'total_doctors'      => $totalDoctors,
                 'total_admins'       => $totalAdmins,
-                'total_alerts'       => Alert::count(),
-                'unread_alerts'      => Alert::where('status', 'unread')->count(),
-                'critical_alerts'    => Alert::whereIn('severity', ['critical', 'emergency'])->count(),
-                'today_alerts'       => Alert::whereDate('created_at', today())->count(),
-                'appointments_today' => Appointment::whereDate('scheduled_at', today())->count(),
-                'critical_patients'  => Patient::where('is_critical', true)->count(),
-                'new_users_today'    => User::whereDate('created_at', today())->count(),
+                'total_alerts'       => $alertRow['total'][0]['count']    ?? 0,
+                'unread_alerts'      => $alertRow['unread'][0]['count']   ?? 0,
+                'critical_alerts'    => $alertRow['critical'][0]['count'] ?? 0,
+                'today_alerts'       => $alertRow['today'][0]['count']    ?? 0,
+                'appointments_today' => $appointmentsToday,
+                'critical_patients'  => $criticalPatients,
+                'new_users_today'    => $newUsersToday,
             ],
         ]);
     }
@@ -135,26 +158,48 @@ class AdminController extends Controller
     {
         $now = now();
 
-        $alertsByDay = Alert::selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->where('created_at', '>=', $now->copy()->subDays(7))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+        $sevenDaysAgo = new \MongoDB\BSON\UTCDateTime($now->copy()->subDays(7)->getTimestamp() * 1000);
+
+        // All alert analytics in one aggregation
+        $alertAnalyticsCursor = Alert::raw(fn ($col) => $col->aggregate([
+            ['$facet' => [
+                'by_severity'    => [
+                    ['$group' => ['_id' => '$severity', 'count' => ['$sum' => 1]]],
+                ],
+                'last_7_days'    => [
+                    ['$match' => ['created_at' => ['$gte' => $sevenDaysAgo]]],
+                    ['$group' => [
+                        '_id'   => ['$dateToString' => ['format' => '%Y-%m-%d', 'date' => '$created_at']],
+                        'count' => ['$sum' => 1],
+                    ]],
+                    ['$sort'    => ['_id' => 1]],
+                    ['$project' => ['date' => '$_id', 'count' => 1, '_id' => 0]],
+                ],
+            ]],
+        ]));
+        $alertAnalytics = iterator_to_array($alertAnalyticsCursor)[0] ?? [];
+        $severityMap    = collect($alertAnalytics['by_severity'] ?? [])->pluck('count', '_id');
+
+        // User counts by role in one aggregation
+        $userRoleCursor = User::raw(fn ($col) => $col->aggregate([
+            ['$group' => ['_id' => '$role', 'count' => ['$sum' => 1]]],
+        ]));
+        $userRoleMap = collect(iterator_to_array($userRoleCursor))->pluck('count', '_id');
 
         return response()->json([
             'success' => true,
             'data'    => [
                 'alerts_by_severity' => [
-                    'emergency' => Alert::where('severity', 'emergency')->count(),
-                    'critical'  => Alert::where('severity', 'critical')->count(),
-                    'warning'   => Alert::where('severity', 'warning')->count(),
-                    'info'      => Alert::where('severity', 'info')->count(),
+                    'emergency' => (int) ($severityMap['emergency'] ?? 0),
+                    'critical'  => (int) ($severityMap['critical']  ?? 0),
+                    'warning'   => (int) ($severityMap['warning']   ?? 0),
+                    'info'      => (int) ($severityMap['info']      ?? 0),
                 ],
-                'alerts_last_7_days' => $alertsByDay,
+                'alerts_last_7_days' => array_values($alertAnalytics['last_7_days'] ?? []),
                 'users_by_role' => [
-                    'admin'   => User::where('role', 'admin')->count(),
-                    'doctor'  => User::where('role', 'doctor')->count(),
-                    'patient' => User::where('role', 'patient')->count(),
+                    'admin'   => (int) ($userRoleMap['admin']   ?? 0),
+                    'doctor'  => (int) ($userRoleMap['doctor']  ?? 0),
+                    'patient' => (int) ($userRoleMap['patient'] ?? 0),
                 ],
                 'critical_patients' => Patient::where('is_critical', true)->with('user:_id,name')->get(),
             ],

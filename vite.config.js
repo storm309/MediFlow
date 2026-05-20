@@ -17,4 +17,20 @@ export default defineConfig({
             ignored: ['**/storage/framework/views/**'],
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Core React libs — cached longest
+                    'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+                    // Redux state layer
+                    'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
+                    // Charts & date utilities
+                    'vendor-charts': ['recharts', 'date-fns'],
+                    // Pusher / real-time
+                    'vendor-realtime': ['pusher-js', 'laravel-echo'],
+                },
+            },
+        },
+    },
 });

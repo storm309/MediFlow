@@ -49,20 +49,47 @@ class HealthMetricRepository extends BaseRepository
 
     public function getAverages(string $patientId, \Carbon\Carbon $start, \Carbon\Carbon $end): array
     {
-        $metrics = $this->getByPeriod($patientId, $start, $end);
+        // Use MongoDB aggregation pipeline — avoids loading all records into PHP
+        $pipeline = [
+            [
+                '$match' => [
+                    'patient_id' => $patientId,
+                    'timestamp'  => [
+                        '$gte' => new \MongoDB\BSON\UTCDateTime($start->getTimestamp() * 1000),
+                        '$lte' => new \MongoDB\BSON\UTCDateTime($end->getTimestamp() * 1000),
+                    ],
+                ],
+            ],
+            [
+                '$group' => [
+                    '_id'                          => null,
+                    'avg_heart_rate'               => ['$avg' => '$heart_rate'],
+                    'avg_spo2'                     => ['$avg' => '$spo2'],
+                    'avg_temperature'              => ['$avg' => '$temperature'],
+                    'avg_blood_pressure_systolic'  => ['$avg' => '$blood_pressure_systolic'],
+                    'avg_blood_pressure_diastolic' => ['$avg' => '$blood_pressure_diastolic'],
+                    'avg_sugar_level'              => ['$avg' => '$sugar_level'],
+                    'metrics_count'                => ['$sum' => 1],
+                ],
+            ],
+        ];
 
-        if ($metrics->isEmpty()) {
+        $cursor = $this->model->raw(fn ($col) => $col->aggregate($pipeline));
+        $data   = iterator_to_array($cursor);
+
+        if (empty($data)) {
             return [];
         }
 
+        $row = $data[0];
         return [
-            'avg_heart_rate'                => round($metrics->avg('heart_rate'), 1),
-            'avg_spo2'                      => round($metrics->avg('spo2'), 1),
-            'avg_temperature'               => round($metrics->avg('temperature'), 1),
-            'avg_blood_pressure_systolic'   => round($metrics->avg('blood_pressure_systolic'), 1),
-            'avg_blood_pressure_diastolic'  => round($metrics->avg('blood_pressure_diastolic'), 1),
-            'avg_sugar_level'               => round($metrics->avg('sugar_level'), 1),
-            'metrics_count'                 => $metrics->count(),
+            'avg_heart_rate'               => round((float) ($row['avg_heart_rate'] ?? 0), 1),
+            'avg_spo2'                     => round((float) ($row['avg_spo2'] ?? 0), 1),
+            'avg_temperature'              => round((float) ($row['avg_temperature'] ?? 0), 1),
+            'avg_blood_pressure_systolic'  => round((float) ($row['avg_blood_pressure_systolic'] ?? 0), 1),
+            'avg_blood_pressure_diastolic' => round((float) ($row['avg_blood_pressure_diastolic'] ?? 0), 1),
+            'avg_sugar_level'              => round((float) ($row['avg_sugar_level'] ?? 0), 1),
+            'metrics_count'                => (int) ($row['metrics_count'] ?? 0),
         ];
     }
 }

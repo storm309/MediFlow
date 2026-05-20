@@ -2,7 +2,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
-import { fetchAlertStats, selectAlertStats } from '../../redux/slices/alertSlice';
 import MetricCard from '../../components/ui/MetricCard';
 import { selectUser } from '../../redux/slices/authSlice';
 
@@ -28,15 +27,12 @@ const quickActions = [
 ];
 
 export default function AdminDashboard() {
-    const dispatch  = useDispatch();
-    const stats     = useSelector(selectAlertStats);
     const user      = useSelector(selectUser);
     const [adminStats, setAdminStats] = React.useState(null);
 
     useEffect(() => {
-        dispatch(fetchAlertStats());
         api.get('/admin/dashboard').then(r => setAdminStats(r.data.data)).catch(() => {});
-    }, [dispatch]);
+    }, []);
 
     return (
         <div className="space-y-8 p-6 max-w-7xl">
@@ -59,8 +55,8 @@ export default function AdminDashboard() {
                     icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>} />
                 <MetricCard title="Total Patients" value={adminStats?.total_patients} color="cyan"
                     icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>} />
-                <MetricCard title="Active Alerts"  value={stats?.total ?? 0}          color="red"
-                    icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>} />
+                <MetricCard title="Critical Patients" value={adminStats?.critical_patients ?? 0} color="red"
+                    icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>} />
             </div>
 
             {/* Quick actions */}
