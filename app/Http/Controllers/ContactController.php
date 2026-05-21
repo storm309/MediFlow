@@ -28,6 +28,23 @@ class ContactController extends Controller
 
         $data = $validator->validated();
 
+        // Always persist the contact request to DB so admin can see it even if email fails
+        \App\Models\ActivityLog::create([
+            'user_id'     => null,
+            'action'      => 'contact_request',
+            'entity_type' => 'contact',
+            'entity_id'   => null,
+            'description' => "Doctor registration request from {$data['name']} ({$data['email']})",
+            'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
+            'metadata'    => [
+                'name'    => $data['name'],
+                'email'   => $data['email'],
+                'phone'   => $data['phone'] ?? null,
+                'message' => $data['message'],
+            ],
+        ]);
+
         // Prefer configured admin email, else fall back to a master admin in DB
         $adminEmail = config('mail.admin_address')
             ?: optional(\App\Models\User::where('role', 'admin')->orderBy('created_at', 'asc')->first())->email
@@ -43,22 +60,20 @@ class ContactController extends Controller
         $body .= "Please create a doctor account for this user via the Admin panel.\n";
         $body .= "MediFlow Admin Panel\n";
 
+        // Attempt email — silently ignore failures (message is already saved to DB)
         try {
             Mail::raw($body, function ($mail) use ($adminEmail, $data) {
                 $mail->to($adminEmail)
                      ->subject("Doctor Registration Request — {$data['name']}")
                      ->replyTo($data['email'], $data['name']);
             });
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Your request has been sent to the admin. You will be contacted soon.',
-            ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send message. Please try again or contact admin directly.',
-            ], 500);
+            // Email failed but request is saved in activity_logs — admin will see it
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your request has been sent to the admin. You will be contacted soon.',
+        ]);
     }
 }
