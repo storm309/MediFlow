@@ -24,6 +24,7 @@ function PatientBookingForm({ user, onClose }) {
     const dispatch   = useDispatch();
     const patientId  = user?.patient_profile?._id;
     const doctorId   = user?.patient_profile?.doctor_id;
+    const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({
         title: '', description: '', scheduled_at: '',
         duration: 30, type: 'consultation', location: '',
@@ -35,12 +36,19 @@ function PatientBookingForm({ user, onClose }) {
         e.preventDefault();
         if (!form.patient_id) { toast.error('Patient profile not found'); return; }
         if (!form.doctor_id)  { toast.error('No doctor assigned to your profile yet'); return; }
+        if (!form.scheduled_at || new Date(form.scheduled_at) <= new Date()) {
+            toast.error('Appointment time must be in the future');
+            return;
+        }
+        setSubmitting(true);
         try {
             await dispatch(createAppointment(form)).unwrap();
             toast.success('Appointment booked!');
             onClose();
         } catch (err) {
             toast.error(err ?? 'Failed to book appointment');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -77,8 +85,8 @@ function PatientBookingForm({ user, onClose }) {
                 <textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-base resize-none" placeholder="Describe your concern…" />
             </div>
             <div className="flex gap-3 mt-5">
-                <button type="submit" className="btn-primary">Book Appointment</button>
-                <button type="button" onClick={onClose} className="btn-ghost">Cancel</button>
+                <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-60">{submitting ? 'Booking…' : 'Book Appointment'}</button>
+                <button type="button" onClick={onClose} disabled={submitting} className="btn-ghost">Cancel</button>
             </div>
         </form>
     );

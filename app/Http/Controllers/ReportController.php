@@ -24,9 +24,21 @@ class ReportController extends Controller
 
         $query = Report::with(['patient.user:_id,name', 'doctor:_id,name']);
 
-        if ($request->user()->isPatient()) {
-            $patient = $request->user()->patientProfile;
-            if ($patient) $query->where('patient_id', (string) $patient->_id);
+        $user = $request->user();
+
+        if ($user->isPatient()) {
+            // Patients can ONLY see their own reports — ignore any patient_id param
+            $patient = $user->patientProfile;
+            if (!$patient) {
+                return response()->json(['success' => true, 'data' => ['data' => []]]);
+            }
+            $query->where('patient_id', (string) $patient->_id);
+            $patientId = null;
+        } elseif ($user->isDoctor()) {
+            // Doctors can only see reports for their assigned patients
+            $doctorPatientIds = \App\Models\Patient::where('doctor_id', (string) $user->_id)
+                ->pluck('_id')->map(fn ($id) => (string) $id)->toArray();
+            $query->whereIn('patient_id', $doctorPatientIds);
         }
 
         if ($patientId) $query->where('patient_id', $patientId);
@@ -51,8 +63,9 @@ class ReportController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        // Check if patient has assigned doctor
-        $patient = \App\Models\Patient::findOrFail($request->patient_id);
+        // Authorize (admins and assigned doctors only since route is role:admin,doctor)
+        $patient = $this->authorizePatientAccess($request->user(), $request->patient_id);
+
         if (!$patient->doctor_id) {
             return response()->json([
                 'success' => false,
@@ -74,18 +87,20 @@ class ReportController extends Controller
     /**
      * GET /reports/{id} — Single report detail.
      */
-    public function show(string $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
         $report = Report::with(['patient.user:_id,name,email', 'doctor:_id,name'])->findOrFail($id);
+        $this->authorizePatientAccess($request->user(), (string) $report->patient_id);
         return response()->json(['success' => true, 'data' => $report]);
     }
 
     /**
      * GET /reports/{id}/pdf — Download PDF report.
      */
-    public function downloadPdf(string $id): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
+    public function downloadPdf(Request $request, string $id): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
     {
         $report = Report::findOrFail($id);
+        $this->authorizePatientAccess($request->user(), (string) $report->patient_id);
 
         if (!$report->pdf_path || !Storage::disk('local')->exists($report->pdf_path)) {
             $path = $this->reportService->generatePdf($id);

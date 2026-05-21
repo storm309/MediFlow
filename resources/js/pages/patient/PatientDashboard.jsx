@@ -86,6 +86,7 @@ export default function PatientDashboard() {
             toast.success('Document uploaded successfully!');
             setUploadFile(null);
             setUploadLabel('');
+            setUploadErr('');
             loadUploads();
         } catch (err) {
             toast.error(err.response?.data?.message ?? 'Upload failed');

@@ -4,6 +4,7 @@ import { fetchReports, generateReport, addReportNotes, selectReports } from '../
 import { selectUser } from '../../redux/slices/authSlice';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 const statusBadge = {
     finalized: 'status-resolved',
@@ -78,13 +79,28 @@ export default function ReportsPage() {
         try {
             await dispatch(generateReport({ ...form, patient_id: patientId })).unwrap();
             toast.success('Report generated!');
+            setForm({ period: 'weekly', start_date: '', end_date: '' });
             setShowForm(false);
         } catch (err) {
             toast.error(err ?? 'Failed to generate report');
         }
     };
 
-    const handleDownloadPdf = (id) => window.open(`/api/v1/reports/${id}/pdf`, '_blank');
+    const handleDownloadPdf = async (id) => {
+        try {
+            const res = await api.get(`/reports/${id}/pdf`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `report-${id}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            toast.error('Failed to download PDF');
+        }
+    };
 
     return (
         <div className="space-y-6 p-6 max-w-4xl">

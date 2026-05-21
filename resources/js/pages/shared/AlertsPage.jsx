@@ -1,8 +1,9 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAlerts, fetchAlertStats, updateAlertStatus, selectLiveAlerts } from '../../redux/slices/alertSlice';
 import AlertBadge from '../../components/ui/AlertBadge';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 const severityBorder = {
     emergency: 'border-l-red-600',
@@ -15,13 +16,25 @@ export default function AlertsPage() {
     const dispatch = useDispatch();
     const { items: alerts, stats, loading } = useSelector((s) => s.alerts);
     const liveAlerts = useSelector(selectLiveAlerts);
+    const [resolvingId, setResolvingId] = useState(null);
 
     useEffect(() => {
         dispatch(fetchAlerts());
         dispatch(fetchAlertStats());
     }, [dispatch]);
 
-    const handleResolve = (id) => dispatch(updateAlertStatus({ id, status: 'resolved' }));
+    const handleResolve = async (id) => {
+        setResolvingId(id);
+        try {
+            await dispatch(updateAlertStatus({ id, status: 'resolved' })).unwrap();
+            toast.success('Alert resolved');
+            dispatch(fetchAlertStats());
+        } catch (err) {
+            toast.error(err ?? 'Failed to resolve alert');
+        } finally {
+            setResolvingId(null);
+        }
+    };
 
     const allAlerts = [...liveAlerts, ...alerts];
 
@@ -92,7 +105,8 @@ export default function AlertsPage() {
                                     ) : (
                                         <button
                                             onClick={() => handleResolve(alert._id ?? alert.id)}
-                                            className="btn-ghost text-xs px-3 py-1.5 hover:bg-green-50 hover:text-green-700 hover:border-green-200"
+                                            disabled={resolvingId === (alert._id ?? alert.id)}
+                                            className="btn-ghost text-xs px-3 py-1.5 hover:bg-green-50 hover:text-green-700 hover:border-green-200 disabled:opacity-50"
                                         >
                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

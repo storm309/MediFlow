@@ -193,7 +193,7 @@ class PatientController extends Controller
             'title'      => "New Patient Request from {$user->name}",
             'message'    => $request->reason ?? "Patient has requested your services.",
             'is_read'    => false,
-            'metadata'   => ['patient_id' => (string)$patient->_id],
+            'data'       => ['patient_id' => (string)$patient->_id],
         ]);
 
         return response()->json([

@@ -88,7 +88,7 @@ class AlertController extends Controller
     public function stats(Request $request): JsonResponse
     {
         // Build base match filter
-        $matchFilter = (object) [];
+        $matchFilter = [];
 
         if ($request->user()->isDoctor()) {
             $patientIds = $this->patientRepo
@@ -102,16 +102,17 @@ class AlertController extends Controller
 
         // Single aggregation with $facet instead of 5 separate queries
         $todayStart = new \MongoDB\BSON\UTCDateTime(now()->startOfDay()->getTimestamp() * 1000);
-        $pipeline = [
-            ['$match' => $matchFilter],
-            ['$facet' => [
+        $pipeline = [];
+        if (!empty($matchFilter)) {
+            $pipeline[] = ['$match' => $matchFilter];
+        }
+        $pipeline[] = ['$facet' => [
                 'total'    => [['$count' => 'count']],
                 'unread'   => [['$match' => ['status' => 'unread']], ['$count' => 'count']],
                 'critical' => [['$match' => ['severity' => ['$in' => ['critical', 'emergency']]]], ['$count' => 'count']],
                 'today'    => [['$match' => ['created_at' => ['$gte' => $todayStart]]], ['$count' => 'count']],
                 'resolved' => [['$match' => ['status' => 'resolved']], ['$count' => 'count']],
-            ]],
-        ];
+        ]];
 
         $cursor = Alert::raw(fn ($col) => $col->aggregate($pipeline));
         $row    = iterator_to_array($cursor)[0] ?? [];

@@ -16,6 +16,7 @@ class HealthMetricController extends Controller
      */
     public function index(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
         $perPage = min((int) $request->get('per_page', 20), 100);
         $metrics = $this->metricService->getHistory($patientId, $perPage);
         return response()->json(['success' => true, 'data' => $metrics]);
@@ -26,6 +27,7 @@ class HealthMetricController extends Controller
      */
     public function recent(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
         $limit   = min((int) $request->get('limit', 50), 200);
         $metrics = $this->metricService->getRecent($patientId, $limit);
         return response()->json(['success' => true, 'data' => $metrics]);
@@ -34,8 +36,9 @@ class HealthMetricController extends Controller
     /**
      * GET /patients/{patientId}/metrics/latest — Single latest reading.
      */
-    public function latest(string $patientId): JsonResponse
+    public function latest(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
         $metric = $this->metricService->getLatest($patientId);
         return response()->json(['success' => true, 'data' => $metric]);
     }
@@ -45,6 +48,8 @@ class HealthMetricController extends Controller
      */
     public function store(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
+
         $validator = Validator::make($request->all(), [
             'heart_rate'               => 'sometimes|numeric|min:0|max:300',
             'spo2'                     => 'sometimes|numeric|min:0|max:100',
@@ -73,6 +78,7 @@ class HealthMetricController extends Controller
      */
     public function averages(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
         $period   = $request->get('period', 'weekly');
         $averages = $this->metricService->getAverages($patientId, $period);
         return response()->json(['success' => true, 'data' => $averages]);

@@ -36,6 +36,24 @@ class FileUploadController extends Controller
             'label'      => 'sometimes|string|max:100',
         ]);
 
+        $user = $request->user();
+        $patientId = $request->patient_id;
+
+        // Patients can only upload files for themselves
+        if ($user->isPatient()) {
+            $own = $user->patientProfile;
+            if (!$own) {
+                return response()->json(['success' => false, 'message' => 'Patient profile not found.'], 404);
+            }
+            // Force patient_id to be their own profile id regardless of what was sent
+            $patientId = (string) $own->_id;
+        } elseif ($user->isDoctor() && $patientId) {
+            $patient = \App\Models\Patient::find($patientId);
+            if (!$patient || (string) $patient->doctor_id !== (string) $user->_id) {
+                return response()->json(['success' => false, 'message' => 'You are not assigned to this patient.'], 403);
+            }
+        }
+
         $file     = $request->file('file');
         $mimeType = $file->getMimeType();
 
@@ -52,8 +70,8 @@ class FileUploadController extends Controller
         $path     = $file->storeAs('uploads/' . $request->type, $filename, 'local');
 
         $record = UploadedFile::create([
-            'user_id'    => (string) $request->user()->_id,
-            'patient_id' => $request->patient_id,
+            'user_id'    => (string) $user->_id,
+            'patient_id' => $patientId,
             'type'       => $request->type,
             'label'      => $request->label ?? $file->getClientOriginalName(),
             'filename'   => $filename,
@@ -112,10 +130,25 @@ class FileUploadController extends Controller
     public function serve(Request $request, string $id)
     {
         $record = UploadedFile::findOrFail($id);
-
-        // Only owner, their doctor, or admin can view
         $user = $request->user();
-        if ($user->role === 'patient' && $record->user_id !== (string) $user->_id) {
+
+        // Authorisation:
+        //  - Admins: always allowed
+        //  - Patients: must be the owner (user_id) or the patient the file belongs to
+        //  - Doctors: must be assigned to the patient the file belongs to
+        $allowed = false;
+        if ($user->isAdmin()) {
+            $allowed = true;
+        } elseif ($user->isPatient()) {
+            $own = $user->patientProfile;
+            $allowed = $record->user_id === (string) $user->_id
+                || ($own && (string) $own->_id === (string) $record->patient_id);
+        } elseif ($user->isDoctor() && $record->patient_id) {
+            $patient = \App\Models\Patient::find($record->patient_id);
+            $allowed = $patient && (string) $patient->doctor_id === (string) $user->_id;
+        }
+
+        if (!$allowed) {
             abort(403, 'Unauthorized.');
         }
 

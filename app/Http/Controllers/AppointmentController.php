@@ -63,6 +63,21 @@ class AppointmentController extends Controller
 
         $user = $request->user();
 
+        // Validate the doctor exists and is verified
+        $doctor = \App\Models\User::where('_id', $request->doctor_id)
+            ->where('role', 'doctor')
+            ->where('is_verified', true)
+            ->first();
+        if (!$doctor) {
+            return response()->json(['success' => false, 'message' => 'Invalid or unverified doctor.'], 422);
+        }
+
+        // Validate patient exists
+        $patientRec = \App\Models\Patient::find($request->patient_id);
+        if (!$patientRec) {
+            return response()->json(['success' => false, 'message' => 'Patient not found.'], 404);
+        }
+
         // Patients can only create appointments for themselves
         if ($user->isPatient()) {
             $patient = $user->patientProfile;
@@ -71,9 +86,15 @@ class AppointmentController extends Controller
             }
         }
 
+        // Doctors can only create appointments for their own patients
+        if ($user->isDoctor() && (string) $patientRec->doctor_id !== (string) $user->_id) {
+            return response()->json(['success' => false, 'message' => 'You are not assigned to this patient.'], 403);
+        }
+
         $appointment = Appointment::create($validator->validated());
 
-        // Notify patient and doctor
+        // Notify patient and doctor (load relationships first)
+        $appointment->load('patient');
         $this->sendNotifications($appointment);
 
         return response()->json([
@@ -119,11 +140,17 @@ class AppointmentController extends Controller
 
         $data = $validator->validated();
 
-        if (($data['status'] ?? '') === 'cancelled') {
+        // Block illegal transitions: a completed appointment shouldn't be re-cancelled
+        if (($data['status'] ?? null) === 'cancelled') {
+            if ($appointment->status === 'completed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot cancel an already completed appointment.',
+                ], 422);
+            }
             $data['cancelled_at'] = now();
-            unset($data['completed_at']); // Clear completed_at if cancelling
         }
-        if (($data['status'] ?? '') === 'completed') {
+        if (($data['status'] ?? null) === 'completed') {
             $data['completed_at'] = now();
         }
 

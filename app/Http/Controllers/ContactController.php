@@ -28,7 +28,10 @@ class ContactController extends Controller
 
         $data = $validator->validated();
 
-        $adminEmail = 'shivamkumarp447@gmail.com';
+        // Prefer configured admin email, else fall back to a master admin in DB
+        $adminEmail = config('mail.admin_address')
+            ?: optional(\App\Models\User::where('role', 'admin')->orderBy('created_at', 'asc')->first())->email
+            ?: 'shivamkumarp447@gmail.com';
 
         $body = "New Doctor Registration Request on MediFlow\n";
         $body .= str_repeat("─", 50) . "\n\n";

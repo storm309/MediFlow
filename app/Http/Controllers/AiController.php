@@ -28,6 +28,8 @@ class AiController extends Controller
      */
     public function analyseRisk(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
+
         try {
             // Fetch latest vitals + recent history
             $latest  = $this->metricService->getLatest($patientId);
@@ -43,8 +45,10 @@ class AiController extends Controller
             // Optionally fetch patient context
             $patient = [];
             try {
-                $p = $this->patientService->findByUserId($patientId);
-                $patient = ['name' => $p?->name ?? 'Patient', 'age' => $p?->age ?? null];
+                $p = \App\Models\Patient::find($patientId);
+                if ($p) {
+                    $patient = ['name' => $p->user?->name ?? 'Patient', 'age' => $p->age ?? null];
+                }
             } catch (\Exception $e) {}
 
             $vitals = [
@@ -83,8 +87,10 @@ class AiController extends Controller
      * GET /ai/risk/{patientId}/history
      * Get past AI analyses for a patient.
      */
-    public function riskHistory(string $patientId): JsonResponse
+    public function riskHistory(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
+
         $analyses = AiAnalysis::where('patient_id', $patientId)
             ->orderBy('created_at', 'desc')
             ->limit(10)
@@ -201,6 +207,8 @@ class AiController extends Controller
      */
     public function reportSummary(Request $request, string $patientId): JsonResponse
     {
+        $this->authorizePatientAccess($request->user(), $patientId);
+
         try {
             $averages = $this->metricService->getAverages($patientId, 'weekly');
             $patient  = ['name' => $request->get('patient_name', 'Patient')];
