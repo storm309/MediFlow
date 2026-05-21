@@ -121,7 +121,38 @@ class AdminController extends Controller
             }
 
             $user = User::findOrFail($id);
+            $oldRole     = $user->role;
+            $oldIsActive = $user->is_active;
             $user->update($data);
+
+            // Notify user if their role was changed
+            if (isset($data['role']) && $data['role'] !== $oldRole) {
+                $this->createNotification(
+                    $user->_id,
+                    'Your Account Role Changed',
+                    'system',
+                    "Your role has been updated to '{$data['role']}' by an administrator."
+                );
+                ActivityLog::create([
+                    'user_id'     => (string) $request->user()->_id,
+                    'action'      => 'update',
+                    'entity_type' => 'user',
+                    'entity_id'   => (string) $user->_id,
+                    'description' => "Admin changed role of {$user->name} from {$oldRole} to {$data['role']}",
+                    'metadata'    => ['user_id' => (string) $user->_id, 'old_role' => $oldRole, 'new_role' => $data['role']],
+                ]);
+            }
+
+            // Notify user if their account was activated/deactivated
+            if (isset($data['is_active']) && $data['is_active'] !== $oldIsActive) {
+                $status = $data['is_active'] ? 'activated' : 'deactivated';
+                $this->createNotification(
+                    $user->_id,
+                    'Account Status Changed',
+                    'system',
+                    "Your account has been {$status} by an administrator."
+                );
+            }
 
             return response()->json(['success' => true, 'data' => $user]);
         } catch (\Exception $e) {
@@ -232,9 +263,28 @@ class AdminController extends Controller
 
         $patient->update(['doctor_id' => (string) $doctor->_id]);
 
-        // Notify doctor and patient
-        $this->createNotification($patient->user_id, 'Patient assigned to you', 'system', "Dr. {$doctor->name} has been assigned to your care.");
-        $this->createNotification($doctor->_id, 'New patient assigned', 'system', "Patient {$patient->user->name} has been assigned to you.");
+        // Notify both parties
+        $this->createNotification(
+            $patient->user_id,
+            'Doctor Assigned to Your Care',
+            'system',
+            "Dr. {$doctor->name} has been assigned as your doctor."
+        );
+        $this->createNotification(
+            $doctor->_id,
+            'New Patient Assigned',
+            'system',
+            "Patient {$patient->user->name} has been assigned to your care by an administrator."
+        );
+
+        ActivityLog::create([
+            'user_id'     => (string) $request->user()->_id,
+            'action'      => 'update',
+            'entity_type' => 'patient',
+            'entity_id'   => (string) $patient->_id,
+            'description' => "Admin assigned Dr. {$doctor->name} to patient {$patient->user->name}",
+            'metadata'    => ['patient_id' => (string) $patient->_id, 'doctor_id' => (string) $doctor->_id],
+        ]);
 
         return response()->json([
             'success' => true,
@@ -259,9 +309,35 @@ class AdminController extends Controller
         $patient = Patient::findOrFail($request->patient_id);
         $doctorName = $patient->doctor?->name ?? 'Doctor';
 
+        $doctorId = $patient->doctor_id;
         $patient->update(['doctor_id' => null]);
 
-        $this->createNotification($patient->user_id, 'Doctor unassigned', 'system', "Your doctor {$doctorName} has been unassigned.");
+        // Notify patient
+        $this->createNotification(
+            $patient->user_id,
+            'Doctor Unassigned',
+            'system',
+            "Dr. {$doctorName} has been unassigned from your care."
+        );
+
+        // Notify doctor
+        if ($doctorId) {
+            $this->createNotification(
+                (string) $doctorId,
+                'Patient Unassigned',
+                'system',
+                "Patient {$patient->user?->name} has been unassigned from your care by an administrator."
+            );
+        }
+
+        ActivityLog::create([
+            'user_id'     => (string) $request->user()->_id,
+            'action'      => 'update',
+            'entity_type' => 'patient',
+            'entity_id'   => (string) $patient->_id,
+            'description' => "Admin unassigned Dr. {$doctorName} from patient {$patient->user?->name}",
+            'metadata'    => ['patient_id' => (string) $patient->_id, 'doctor_id' => (string) $doctorId],
+        ]);
 
         return response()->json(['success' => true, 'message' => 'Doctor unassigned successfully.', 'data' => $patient]);
     }
@@ -345,8 +421,21 @@ class AdminController extends Controller
             ]);
 
             // Send verification pending notification
-            $this->createNotification($doctor->_id, 'Account Created - Pending Verification', 'system',
-                'Your doctor account has been created by admin. Please wait for verification.');
+            $this->createNotification(
+                $doctor->_id,
+                'Account Created — Pending Verification',
+                'system',
+                'Your doctor account has been created by an administrator. Your credentials are under review. You will be notified once verified.'
+            );
+
+            ActivityLog::create([
+                'user_id'     => (string) $request->user()->_id,
+                'action'      => 'create',
+                'entity_type' => 'user',
+                'entity_id'   => (string) $doctor->_id,
+                'description' => "Admin created doctor account for {$doctor->name} ({$doctor->email})",
+                'metadata'    => ['doctor_id' => (string) $doctor->_id, 'specialization' => $doctor->specialization],
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -415,6 +504,19 @@ class AdminController extends Controller
             }
 
             $this->createNotification($doctor->_id, $title, 'system', $message);
+
+            ActivityLog::create([
+                'user_id'     => (string) $request->user()->_id,
+                'action'      => 'update',
+                'entity_type' => 'user',
+                'entity_id'   => (string) $doctor->_id,
+                'description' => "Admin {$request->status} doctor {$doctor->name} ({$doctor->email})",
+                'metadata'    => [
+                    'doctor_id' => (string) $doctor->_id,
+                    'status'    => $request->status,
+                    'notes'     => $request->notes ?? null,
+                ],
+            ]);
 
             return response()->json([
                 'success' => true,
