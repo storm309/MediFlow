@@ -273,8 +273,8 @@ class AdminController extends Controller
     {
         $doctors = User::where('role', 'doctor')
             ->where('is_active', true)
-            ->where('verification_status', 'verified')
-            ->select('_id', 'name', 'email', 'phone', 'specialization')
+            ->select('_id', 'name', 'email', 'phone', 'specialization', 'verification_status')
+            ->orderBy('name')
             ->get();
         return response()->json(['success' => true, 'data' => $doctors]);
     }
