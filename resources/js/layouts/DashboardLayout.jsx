@@ -42,8 +42,8 @@ export default function DashboardLayout() {
                     <Outlet />
                 </main>
             </div>
-            {/* AI Chat Widget — available to all logged-in users */}
-            <AiChatWidget />
+            {/* AI Chat Widget — only for doctor & patient */}
+            {(user?.role === 'doctor' || user?.role === 'patient') && <AiChatWidget />}
         </div>
     );
 }

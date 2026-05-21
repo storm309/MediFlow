@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const features = [
     {
@@ -105,6 +106,107 @@ const roles = [
     },
 ];
 
+/* ── Contact Form ─────────────────────────────────────────────────── */
+function ContactForm() {
+    const [form, setForm]   = useState({ name: '', email: '', phone: '', message: '' });
+    const [status, setStatus] = useState(null); // 'loading' | 'ok' | 'err'
+    const [errMsg, setErrMsg] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatus('loading');
+        setErrMsg('');
+        try {
+            await axios.post('/api/v1/contact-admin', form);
+            setStatus('ok');
+            setForm({ name: '', email: '', phone: '', message: '' });
+        } catch (err) {
+            setStatus('err');
+            setErrMsg(err.response?.data?.message ?? 'Something went wrong. Please try again.');
+        }
+    };
+
+    if (status === 'ok') {
+        return (
+            <div className="rounded-2xl p-10 border border-emerald-500/20 bg-emerald-500/5 text-center">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h3 className="text-white font-black text-xl mb-2">Message Sent!</h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                    Thank you for reaching out. Our admin will review your request and get back to you within 24 hours.
+                </p>
+                <button onClick={() => setStatus(null)}
+                    className="px-6 py-2.5 text-sm font-semibold rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors">
+                    Send Another
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <form onSubmit={handleSubmit}
+            className="rounded-2xl p-7 border border-white/[0.06]"
+            style={{ background: 'rgba(255,255,255,0.03)' }}
+        >
+            {status === 'err' && (
+                <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                    {errMsg}
+                </div>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Your Name *</label>
+                    <input required type="text" value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder="Shivam Kumar"
+                        className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-600 border border-white/[0.08] bg-white/[0.04] focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.06] transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Phone</label>
+                    <input type="tel" value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="9876543210"
+                        className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-600 border border-white/[0.08] bg-white/[0.04] focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.06] transition-all"
+                    />
+                </div>
+            </div>
+            <div className="mb-4">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Your Email *</label>
+                <input required type="email" value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="you@example.com"
+                    className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-600 border border-white/[0.08] bg-white/[0.04] focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.06] transition-all"
+                />
+            </div>
+            <div className="mb-6">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Message *</label>
+                <textarea required rows={5} value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    placeholder="Include your specialization and medical license number if requesting a doctor account…"
+                    className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-600 border border-white/[0.08] bg-white/[0.04] focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.06] transition-all resize-none"
+                />
+            </div>
+            <button type="submit" disabled={status === 'loading'}
+                className="w-full py-3.5 text-sm font-bold bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
+            >
+                {status === 'loading' ? (
+                    <span className="flex items-center justify-center gap-2">
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        Sending…
+                    </span>
+                ) : 'Send Message'}
+            </button>
+        </form>
+    );
+}
+
 export default function LandingPage() {
     const [scrolled, setScrolled] = useState(false);
 
@@ -113,6 +215,10 @@ export default function LandingPage() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const scrollTo = (id) => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
         <div className="min-h-screen" style={{ background: '#070d1c', color: '#f0f4ff' }}>
@@ -131,6 +237,11 @@ export default function LandingPage() {
                             </svg>
                         </div>
                         <span className="font-black text-white text-lg tracking-tight">MediFlow</span>
+                    </div>
+                    <div className="hidden md:flex items-center gap-1">
+                        <button onClick={() => scrollTo('features')} className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-white/5">Features</button>
+                        <button onClick={() => scrollTo('roles')} className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-white/5">Roles</button>
+                        <button onClick={() => scrollTo('contact')} className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-white/5">Contact</button>
                     </div>
                     <div className="flex items-center gap-3">
                         <Link to="/login"
@@ -279,7 +390,7 @@ export default function LandingPage() {
             </section>
 
             {/* Features */}
-            <section className="py-24" style={{ background: '#0a0f1e' }}>
+            <section id="features" className="py-24" style={{ background: '#0a0f1e' }}>
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-bold uppercase tracking-widest mb-4">
@@ -321,7 +432,7 @@ export default function LandingPage() {
             </section>
 
             {/* Roles */}
-            <section className="py-24" style={{ background: '#070d1c' }}>
+            <section id="roles" className="py-24" style={{ background: '#070d1c' }}>
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs font-bold uppercase tracking-widest mb-4">
@@ -412,24 +523,155 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="border-t border-white/5 py-10" style={{ background: '#050810' }}>
-                <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center">
-                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
+            {/* ── Contact Us ───────────────────────────────────── */}
+            <section id="contact" className="py-24" style={{ background: '#0a0f1e' }}>
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-14">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4">
+                            Contact Us
                         </div>
-                        <span className="font-bold text-white text-sm">MediFlow</span>
+                        <h2 className="text-4xl font-black tracking-tight mb-4 text-white">
+                            Get in <span className="gradient-text">touch</span>
+                        </h2>
+                        <p className="text-slate-400 text-lg max-w-xl mx-auto">
+                            Want to join as a doctor, have a question, or need support? We're here to help.
+                        </p>
                     </div>
-                    <p className="text-xs text-slate-600">
-                        &copy; {new Date().getFullYear()} MediFlow. Built with care for better healthcare. Open Source under MIT License.
-                    </p>
-                    <div className="flex items-center gap-5 text-xs">
-                        <Link to="/login" className="text-slate-500 hover:text-white transition-colors">Login</Link>
-                        <Link to="/register" className="text-slate-500 hover:text-white transition-colors">Register</Link>
-                        <a href="https://github.com/storm309/MediFlow" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-white transition-colors">GitHub</a>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+                        {/* Left — info cards */}
+                        <div className="space-y-5">
+                            {[
+                                {
+                                    icon: (
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    ),
+                                    label: 'Email',
+                                    value: 'shivamkumarp447@gmail.com',
+                                    href: 'mailto:shivamkumarp447@gmail.com',
+                                    color: 'from-indigo-500 to-violet-600',
+                                    glow: 'rgba(99,102,241,0.3)',
+                                },
+                                {
+                                    icon: (
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                    ),
+                                    label: 'Phone',
+                                    value: '+91 82529 80774',
+                                    href: 'tel:+918252980774',
+                                    color: 'from-emerald-500 to-teal-600',
+                                    glow: 'rgba(16,185,129,0.3)',
+                                },
+                                {
+                                    icon: (
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                    ),
+                                    label: 'Location',
+                                    value: 'Bihar, India',
+                                    href: null,
+                                    color: 'from-rose-500 to-pink-600',
+                                    glow: 'rgba(244,63,94,0.3)',
+                                },
+                            ].map((item) => (
+                                <div key={item.label}
+                                    className="flex items-center gap-5 p-5 rounded-2xl border border-white/[0.06] transition-all duration-200 hover:-translate-y-0.5"
+                                    style={{ background: 'rgba(255,255,255,0.03)' }}
+                                >
+                                    <div className={`w-12 h-12 shrink-0 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center text-white shadow-lg`}
+                                        style={{ boxShadow: `0 8px 24px ${item.glow}` }}>
+                                        {item.icon}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-0.5">{item.label}</p>
+                                        {item.href
+                                            ? <a href={item.href} className="text-white font-semibold hover:text-indigo-300 transition-colors">{item.value}</a>
+                                            : <p className="text-white font-semibold">{item.value}</p>
+                                        }
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Doctor registration note */}
+                            <div className="p-5 rounded-2xl border border-indigo-500/20 bg-indigo-500/5">
+                                <p className="text-indigo-300 font-bold text-sm mb-1">🩺 Want to register as a Doctor?</p>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Send us your specialization and medical license number via the contact form.
+                                    Our admin will create your verified account within 24 hours.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Right — contact form */}
+                        <ContactForm />
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="border-t border-white/[0.06]" style={{ background: '#050810' }}>
+                <div className="max-w-7xl mx-auto px-6 pt-14 pb-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                        {/* Brand */}
+                        <div className="lg:col-span-2">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shadow-lg">
+                                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </div>
+                                <span className="font-black text-white">MediFlow</span>
+                            </div>
+                            <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
+                                A real-time patient health monitoring platform connecting admins, doctors and patients with live vitals and AI-powered insights.
+                            </p>
+                            <div className="flex items-center gap-3 mt-5">
+                                <a href="https://github.com/storm309/MediFlow" target="_blank" rel="noreferrer"
+                                    className="w-9 h-9 rounded-xl bg-white/5 border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                </a>
+                                <a href="mailto:shivamkumarp447@gmail.com"
+                                    className="w-9 h-9 rounded-xl bg-white/5 border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        {/* Navigation */}
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Platform</p>
+                            <ul className="space-y-3">
+                                {[['Features', '#features'], ['User Roles', '#roles'], ['Contact', '#contact']].map(([label, href]) => (
+                                    <li key={label}>
+                                        <a href={href} className="text-sm text-slate-500 hover:text-white transition-colors">{label}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        {/* Account */}
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Account</p>
+                            <ul className="space-y-3">
+                                <li><Link to="/login" className="text-sm text-slate-500 hover:text-white transition-colors">Sign In</Link></li>
+                                <li><Link to="/register" className="text-sm text-slate-500 hover:text-white transition-colors">Register</Link></li>
+                                <li><a href="https://github.com/storm309/MediFlow" target="_blank" rel="noreferrer" className="text-sm text-slate-500 hover:text-white transition-colors">GitHub</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="border-t border-white/[0.06] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-xs text-slate-600">
+                            &copy; {new Date().getFullYear()} MediFlow. Built with care for better healthcare.
+                        </p>
+                        <p className="text-xs text-slate-700">Open Source under MIT License</p>
                     </div>
                 </div>
             </footer>
